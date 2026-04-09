@@ -1,0 +1,59 @@
+/* ============ RESPONSIVE ============ */
+
+@media (max-width: 768px) {
+  :root {
+    --nav-height: 56px;
+    --space-3xl: 2.5rem;
+  }
+
+  .two-blocks { grid-template-columns: 1fr; }
+  .menu-grid { grid-template-columns: repeat(2, 1fr); }
+  .stat-cards { grid-template-columns: 1fr; }
+  .feature-grid { grid-template-columns: repeat(2, 1fr); }
+  .hybrid-grid { grid-template-columns: 1fr; }
+  .app-grid { grid-template-columns: repeat(2, 1fr); }
+  .match-pairs { grid-template-columns: 1fr; }
+  .dataset-row { grid-template-columns: 1fr 1fr; gap: var(--space-sm); font-size: 0.8rem; }
+  .dataset-header { display: none; }
+  .next-steps-grid { grid-template-columns: 1fr; }
+
+  .portada-title { font-size: clamp(1.6rem, 6vw, 2.5rem); }
+  .portada-actions { flex-direction: column; align-items: center; }
+  .btn { width: 100%; max-width: 280px; justify-content: center; }
+  .global-nav { gap: var(--space-md); }
+  .avatar-widget { right: 10px; bottom: calc(var(--nav-height) + 10px); }
+  .avatar-body { width: 180px; }
+}
+
+@media (max-width: 480px) {
+  .menu-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .screen-inner {
+    padding: var(--space-xl) var(--space-md) var(--space-xl);
+  }
+
+  .module-activity {
+    padding: var(--space-lg);
+  }
+
+  .block {
+    padding: var(--space-lg);
+  }
+
+  .nav-menu-btn span {
+    display: none;
+  }
+
+  .nav-menu-btn {
+    width: 48px;
+    padding: 0;
+  }
+}
+
+@media (min-width: 1200px) {
+  :root {
+    --max-width: 960px;
+  }
+}
