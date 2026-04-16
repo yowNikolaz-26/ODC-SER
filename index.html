@@ -6,1042 +6,1899 @@
   <title>ODC — Reconocimiento Emocional por Voz en Interfaces Adaptativas</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css">
-  <link rel="stylesheet" href="css/responsive.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --red:        #C0202B;
+      --red-light:  #e8353f;
+      --red-pale:   #fdf2f2;
+      --dark:       #1a1a1a;
+      --mid:        #4a4a4a;
+      --muted:      #8a8a8a;
+      --border:     #d8d8d8;
+      --border-l:   #ebebeb;
+      --bg:         #f8f7f5;
+      --white:      #ffffff;
+      --cream:      #f3f1ee;
+      --zone-bg:    #ffffff;
+      --shadow:     0 1px 4px rgba(0,0,0,0.07);
+      --shadow-md:  0 4px 16px rgba(0,0,0,0.10);
+      --r:          6px;
+      --font-head:  'Playfair Display', Georgia, serif;
+      --font-body:  'DM Sans', sans-serif;
+      --font-mono:  'DM Mono', monospace;
+    }
+
+    html, body { height: 100%; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--dark);
+      line-height: 1.6;
+      font-size: 15px;
+    }
+
+    /* ===== PROGRESS BAR ===== */
+    .progress-bar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--border-l);
+      z-index: 1000;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--red);
+      transition: width 0.4s ease;
+      width: 0%;
+    }
+
+    /* ===== GLOBAL NAV ===== */
+    .global-nav {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 6px 10px;
+      box-shadow: var(--shadow-md);
+      z-index: 1000;
+    }
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border: none;
+      background: transparent;
+      color: var(--mid);
+      border-radius: 100px;
+      cursor: pointer;
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 500;
+      transition: background 0.15s, color 0.15s;
+    }
+    .nav-btn:hover { background: var(--cream); color: var(--dark); }
+    .nav-btn.nav-menu-btn { background: var(--red); color: #fff; }
+    .nav-btn.nav-menu-btn:hover { background: var(--red-light); }
+
+    /* ===== SCREEN SYSTEM ===== */
+    .odc-wrap {
+      min-height: 100vh;
+      padding: 14px 0 100px;
+    }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ===== PORTADA ===== */
+    .portada-screen {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: var(--white);
+      position: relative;
+      overflow: hidden;
+    }
+    .portada-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 28px 48px 0;
+      border-bottom: 1px solid var(--border-l);
+      padding-bottom: 20px;
+    }
+    .portada-logo-box {
+      width: 180px;
+      height: 70px;
+      border: 2px dashed var(--border);
+      border-radius: var(--r);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 11px;
+      text-align: center;
+      padding: 8px;
+    }
+    .portada-udec {
+      text-align: right;
+    }
+    .portada-udec p { font-size: 12px; color: var(--muted); line-height: 1.4; }
+    .portada-udec strong { color: var(--dark); font-size: 13px; }
+
+    .portada-body {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+    }
+    .portada-left {
+      padding: 60px 48px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border-right: 1px solid var(--border-l);
+    }
+    .portada-badge {
+      display: inline-block;
+      background: var(--red-pale);
+      color: var(--red);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 100px;
+      margin-bottom: 24px;
+    }
+    .portada-title {
+      font-family: var(--font-head);
+      font-size: clamp(28px, 4vw, 48px);
+      line-height: 1.15;
+      color: var(--dark);
+      margin-bottom: 32px;
+    }
+    .portada-title em {
+      color: var(--red);
+      font-style: normal;
+    }
+    .portada-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 40px;
+    }
+    .portada-meta-row {
+      display: flex;
+      gap: 8px;
+      font-size: 13px;
+    }
+    .portada-meta-row span:first-child {
+      color: var(--muted);
+      min-width: 60px;
+    }
+    .portada-meta-row span:last-child { color: var(--dark); font-weight: 500; }
+
+    .portada-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+    .portada-right {
+      background: var(--cream);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      padding: 48px;
+      position: relative;
+    }
+    .portada-image-box {
+      width: 100%;
+      max-width: 380px;
+      aspect-ratio: 16/10;
+      border: 2px dashed var(--border);
+      border-radius: 10px;
+      background: var(--white);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .portada-image-box svg { opacity: 0.4; }
+    .portada-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+    .portada-tag {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 4px 14px;
+      font-size: 12px;
+      color: var(--mid);
+    }
+
+    .portada-footer {
+      padding: 16px 48px;
+      border-top: 1px solid var(--border-l);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .portada-footer-red {
+      background: var(--red);
+      color: white;
+      padding: 4px 16px;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    /* ===== BUTTONS ===== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 24px;
+      border-radius: 6px;
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s;
+      text-decoration: none;
+    }
+    .btn-primary { background: var(--red); color: white; }
+    .btn-primary:hover { background: var(--red-light); }
+    .btn-ghost { background: transparent; color: var(--dark); border: 1px solid var(--border); }
+    .btn-ghost:hover { background: var(--cream); }
+    .btn-sm { padding: 7px 16px; font-size: 12px; }
+
+    /* ===== ODC LAYOUT (7 ZONES) ===== */
+    .odc-page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 16px 24px;
+    }
+
+    /* Top strip: zone1 (big) + zone2+5+6 column */
+    .odc-top {
+      display: grid;
+      grid-template-columns: 1fr 260px;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    /* Zone 1: image of interface */
+    .zone-1 {
+      background: var(--zone-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      min-height: 340px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .zone-1-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border-l);
+      background: var(--cream);
+    }
+    .zone-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+    }
+    .zone-num-badge {
+      width: 20px; height: 20px;
+      background: var(--dark);
+      color: white;
+      border-radius: 50%;
+      font-size: 10px;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .zone-1-body {
+      flex: 1;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+    /* Image placeholder inside zone 1 */
+    .img-placeholder {
+      background: var(--cream);
+      border: 2px dashed var(--border);
+      border-radius: var(--r);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+      padding: 16px;
+    }
+    .img-placeholder svg { opacity: 0.35; }
+
+    /* Right sidebar: zone 2 + 5 + 6 */
+    .odc-right-col {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Zone 2: screen number */
+    .zone-2 {
+      background: var(--zone-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 14px 16px;
+    }
+    .zone-2 .screen-number-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      display: block;
+      margin-bottom: 4px;
+    }
+    .zone-2 .screen-number-value {
+      font-family: var(--font-head);
+      font-size: 22px;
+      color: var(--red);
+      font-weight: 700;
+    }
+    .zone-2 .screen-number-title {
+      font-size: 12px;
+      color: var(--mid);
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    /* Zone 5: voices/audio */
+    .zone-5 {
+      background: var(--zone-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      flex: 1;
+      overflow: hidden;
+    }
+    .zone-5-header {
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border-l);
+      background: var(--cream);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .zone-5-body {
+      padding: 14px 16px;
+    }
+    .avatar-placeholder {
+      background: var(--cream);
+      border: 2px dashed var(--border);
+      border-radius: var(--r);
+      padding: 20px 12px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .avatar-placeholder svg { display: block; margin: 0 auto 8px; opacity: 0.4; }
+    .avatar-video-wrap video {
+      width: 100%;
+      border-radius: 4px;
+      display: block;
+    }
+
+    /* Zone 6: image description */
+    .zone-6 {
+      background: var(--zone-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      overflow: hidden;
+    }
+    .zone-6-header {
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--border-l);
+      background: var(--cream);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .zone-6-body {
+      padding: 12px 14px;
+      font-size: 12px;
+      color: var(--mid);
+      line-height: 1.5;
+    }
+
+    /* Bottom strip: zone3 + zone4 */
+    .odc-bottom {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    /* Zone 3: text content */
+    .zone-3 {
+      background: var(--zone-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      overflow: hidden;
+    }
+    .zone-3-header {
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border-l);
+      background: var(--cream);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .zone-3-body {
+      padding: 18px 20px;
+    }
+    .zone-3-body h2 {
+      font-family: var(--font-head);
+      font-size: 20px;
+      color: var(--dark);
+      margin-bottom: 10px;
+      line-height: 1.25;
+    }
+    .zone-3-body h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--dark);
+      margin: 16px 0 6px;
+    }
+    .zone-3-body p {
+      font-size: 13.5px;
+      color: var(--mid);
+      line-height: 1.65;
+      margin-bottom: 10px;
+    }
+    .zone-3-body p:last-child { margin-bottom: 0; }
+
+    /* Zone 4: interactivity */
+    .zone-4 {
+      background: var(--zone-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      overflow: hidden;
+    }
+    .zone-4-header {
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border-l);
+      background: var(--cream);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .zone-4-body {
+      padding: 18px 20px;
+    }
+    .zone-4-body h3 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 14px;
+    }
+
+    /* Zone 7: comments */
+    .zone-7 {
+      background: var(--zone-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      overflow: hidden;
+    }
+    .zone-7-header {
+      padding: 8px 16px;
+      border-bottom: 1px solid var(--border-l);
+      background: var(--cream);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .zone-7-body {
+      padding: 12px 16px;
+      font-size: 12px;
+      color: var(--mid);
+      line-height: 1.55;
+    }
+
+    /* ===== MENÚ SCREEN ===== */
+    .menu-screen {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 24px;
+    }
+    .menu-title {
+      font-family: var(--font-head);
+      font-size: 32px;
+      color: var(--dark);
+      margin-bottom: 6px;
+    }
+    .menu-subtitle { color: var(--muted); font-size: 14px; margin-bottom: 32px; }
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    .menu-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-family: var(--font-body);
+    }
+    .menu-card:hover {
+      border-color: var(--red);
+      box-shadow: 0 0 0 3px var(--red-pale);
+      transform: translateY(-2px);
+    }
+    .menu-number {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--red);
+      font-weight: 500;
+    }
+    .menu-label { font-size: 15px; font-weight: 600; color: var(--dark); }
+    .menu-desc { font-size: 12px; color: var(--muted); }
+    .menu-card--secondary {
+      background: var(--cream);
+      flex-direction: row;
+      align-items: center;
+      gap: 12px;
+    }
+    .menu-card--secondary .menu-icon { font-size: 20px; }
+    .menu-divider { grid-column: 1/-1; height: 1px; background: var(--border-l); }
+    .menu-section-label {
+      grid-column: 1/-1;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+
+    /* ===== ACTIVITY STYLES ===== */
+    /* V/F */
+    .vf-list { display: flex; flex-direction: column; gap: 14px; }
+    .vf-item { background: var(--cream); border-radius: var(--r); padding: 14px 16px; }
+    .vf-statement { font-size: 13px; color: var(--dark); margin-bottom: 10px; line-height: 1.5; }
+    .vf-buttons { display: flex; gap: 8px; }
+    .vf-btn {
+      padding: 6px 18px;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      background: var(--white);
+      cursor: pointer;
+      font-size: 12px;
+      font-family: var(--font-body);
+      font-weight: 500;
+      transition: all 0.12s;
+    }
+    .vf-btn:hover { border-color: var(--red); color: var(--red); }
+    .vf-btn.correct { background: #d1fae5; border-color: #6ee7b7; color: #065f46; }
+    .vf-btn.incorrect { background: #fee2e2; border-color: #fca5a5; color: #991b1b; }
+    .vf-feedback { font-size: 12px; margin-top: 8px; font-weight: 500; min-height: 18px; }
+
+    /* MC */
+    .mc-list { display: flex; flex-direction: column; gap: 16px; }
+    .mc-item { background: var(--cream); border-radius: var(--r); padding: 14px 16px; }
+    .mc-question { font-size: 13px; color: var(--dark); margin-bottom: 10px; line-height: 1.5; font-weight: 500; }
+    .mc-options { display: flex; flex-direction: column; gap: 6px; }
+    .mc-btn {
+      padding: 8px 14px;
+      border-radius: var(--r);
+      border: 1px solid var(--border);
+      background: var(--white);
+      cursor: pointer;
+      font-size: 12.5px;
+      text-align: left;
+      font-family: var(--font-body);
+      transition: all 0.12s;
+    }
+    .mc-btn:hover { border-color: var(--red); background: var(--red-pale); }
+    .mc-btn.correct { background: #d1fae5; border-color: #6ee7b7; color: #065f46; }
+    .mc-btn.incorrect { background: #fee2e2; border-color: #fca5a5; color: #991b1b; }
+    .mc-feedback { font-size: 12px; margin-top: 8px; font-weight: 500; min-height: 18px; }
+
+    /* Match */
+    .match-pairs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+    .match-col { display: flex; flex-direction: column; gap: 6px; }
+    .match-item {
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      background: var(--white);
+      border-radius: var(--r);
+      cursor: pointer;
+      font-size: 12px;
+      font-family: var(--font-body);
+      text-align: left;
+      transition: all 0.12s;
+    }
+    .match-item:hover { border-color: var(--red); }
+    .match-item.selected { border-color: var(--red); background: var(--red-pale); }
+    .match-item.matched { background: #d1fae5; border-color: #6ee7b7; color: #065f46; }
+    .match-feedback { font-size: 12px; font-weight: 500; }
+
+    /* Sort */
+    .sort-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+    .sort-item {
+      padding: 9px 14px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      cursor: grab;
+      font-size: 12.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.12s;
+    }
+    .sort-item::before { content: '⋮⋮'; color: var(--muted); font-size: 11px; }
+    .sort-item.dragging { opacity: 0.5; }
+    .sort-item.correct { background: #d1fae5; border-color: #6ee7b7; }
+    .sort-feedback { font-size: 12px; font-weight: 500; }
+
+    /* Popup info */
+    .popup-trigger {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 4px 12px;
+      background: var(--red-pale);
+      color: var(--red);
+      border: 1px solid #f5c6c8;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--font-body);
+      transition: all 0.12s;
+    }
+    .popup-trigger:hover { background: var(--red); color: white; }
+    .popup-panel {
+      display: none;
+      margin-top: 10px;
+      padding: 14px;
+      background: var(--cream);
+      border-left: 3px solid var(--red);
+      border-radius: 0 var(--r) var(--r) 0;
+      font-size: 12.5px;
+      color: var(--mid);
+      line-height: 1.6;
+    }
+    .popup-panel.open { display: block; }
+    .popup-panel h4 { font-size: 13px; color: var(--dark); margin-bottom: 6px; }
+
+    /* Stat cards */
+    .stat-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .stat-card {
+      flex: 1;
+      min-width: 100px;
+      background: var(--cream);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 14px;
+      text-align: center;
+    }
+    .stat-value { display: block; font-family: var(--font-head); font-size: 28px; color: var(--red); font-weight: 700; }
+    .stat-label { display: block; font-size: 11px; color: var(--muted); line-height: 1.4; margin-top: 4px; }
+
+    /* Feature grid */
+    .feat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0; }
+    .feat-card {
+      background: var(--cream);
+      border: 1px solid var(--border-l);
+      border-radius: var(--r);
+      padding: 12px;
+    }
+    .feat-card h4 { font-size: 12px; font-weight: 700; color: var(--dark); margin-bottom: 4px; font-family: var(--font-mono); }
+    .feat-card p { font-size: 11.5px; color: var(--mid); line-height: 1.5; }
+
+    /* Layer stack */
+    .layer-stack { display: flex; flex-direction: column; gap: 6px; }
+    .layer-item { display: flex; gap: 12px; align-items: flex-start; }
+    .layer-num {
+      width: 24px; height: 24px; flex-shrink: 0;
+      background: var(--red); color: white;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700;
+    }
+    .layer-info h4 { font-size: 13px; font-weight: 600; color: var(--dark); margin-bottom: 2px; }
+    .layer-info p { font-size: 12px; color: var(--mid); line-height: 1.5; }
+
+    /* Hybrid/fusion/app grid */
+    .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .card-item {
+      background: var(--cream);
+      border: 1px solid var(--border-l);
+      border-radius: var(--r);
+      padding: 12px;
+    }
+    .card-item h4 { font-size: 12px; font-weight: 700; color: var(--dark); margin-bottom: 4px; }
+    .card-item p { font-size: 11.5px; color: var(--mid); line-height: 1.5; }
+    .card-item .app-icon { font-size: 18px; display: block; margin-bottom: 4px; }
+    .fusion-tag {
+      display: inline-block;
+      margin-top: 6px;
+      background: #e0f2fe;
+      color: #0369a1;
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 100px;
+    }
+
+    /* Dataset table */
+    .dataset-table { border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; margin: 10px 0; }
+    .dataset-row {
+      display: grid;
+      grid-template-columns: 1.2fr 0.7fr 0.8fr 2fr;
+      gap: 0;
+      border-bottom: 1px solid var(--border-l);
+      font-size: 11.5px;
+    }
+    .dataset-row:last-child { border-bottom: none; }
+    .dataset-row span { padding: 8px 10px; color: var(--mid); border-right: 1px solid var(--border-l); }
+    .dataset-row span:last-child { border-right: none; }
+    .dataset-header { background: var(--cream); }
+    .dataset-header span { font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+
+    /* Metric list */
+    .metric-list { display: flex; flex-direction: column; gap: 6px; }
+    .metric-item { font-size: 12.5px; color: var(--mid); padding: 8px 12px; background: var(--cream); border-radius: var(--r); line-height: 1.5; }
+    .metric-item strong { color: var(--dark); }
+
+    /* ===== EVALUACION ===== */
+    .eval-screen {
+      max-width: 800px;
+      margin: 30px auto;
+      padding: 0 24px;
+    }
+    .eval-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .eval-top h2 { font-family: var(--font-head); font-size: 28px; color: var(--dark); }
+    .eval-progress-wrap {
+      display: flex; align-items: center; gap: 12px;
+      font-size: 13px; color: var(--mid);
+    }
+    .eval-bar {
+      width: 120px; height: 6px; background: var(--border); border-radius: 100px; overflow: hidden;
+    }
+    .eval-bar-fill { height: 100%; background: var(--red); border-radius: 100px; transition: width 0.3s; }
+    #evalScore { font-weight: 600; color: var(--dark); font-family: var(--font-mono); }
+
+    .eval-q-wrap { display: flex; flex-direction: column; gap: 20px; }
+    .eval-question {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+    }
+    .eval-q-number { font-size: 11px; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+    .eval-result {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 32px;
+      text-align: center;
+      display: none;
+    }
+    .eval-result.visible { display: block; }
+    .eval-result-icon { font-size: 40px; display: block; margin-bottom: 12px; }
+    .eval-result h3 { font-family: var(--font-head); font-size: 24px; color: var(--dark); margin-bottom: 8px; }
+    .eval-result p { color: var(--mid); font-size: 14px; margin-bottom: 20px; }
+
+    /* ===== CONCLUSION / REFS / CREDITS ===== */
+    .text-screen {
+      max-width: 900px;
+      margin: 30px auto;
+      padding: 0 24px;
+    }
+    .text-screen-title { font-family: var(--font-head); font-size: 28px; color: var(--dark); margin-bottom: 24px; }
+    .text-screen-tag {
+      display: inline-block;
+      background: var(--red-pale); color: var(--red);
+      font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+      padding: 3px 10px; border-radius: 100px; margin-bottom: 10px;
+    }
+
+    .conclusion-block {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px;
+      margin-bottom: 14px;
+      display: flex;
+      gap: 20px;
+    }
+    .conclusion-num {
+      font-family: var(--font-head);
+      font-size: 40px;
+      color: var(--border);
+      line-height: 1;
+      flex-shrink: 0;
+      min-width: 52px;
+    }
+    .conclusion-block h3 { font-size: 16px; font-weight: 600; color: var(--dark); margin-bottom: 8px; }
+    .conclusion-block p { font-size: 13.5px; color: var(--mid); line-height: 1.65; }
+
+    .next-steps-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+    .next-step-item {
+      background: var(--cream);
+      border-radius: var(--r);
+      padding: 16px;
+      display: flex; gap: 12px; align-items: flex-start;
+    }
+    .next-step-item span { font-size: 20px; flex-shrink: 0; }
+    .next-step-item p { font-size: 13px; color: var(--mid); line-height: 1.5; }
+
+    /* References */
+    .ref-list { display: flex; flex-direction: column; gap: 10px; }
+    .ref-item {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 14px 18px;
+      font-size: 13px;
+      color: var(--mid);
+      line-height: 1.6;
+    }
+    .ref-item a { color: var(--red); text-decoration: none; }
+    .ref-item a:hover { text-decoration: underline; }
+
+    /* Credits */
+    .credits-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .credits-box {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+    }
+    .credits-box h3 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 10px; }
+    .credits-box p { font-size: 14px; color: var(--dark); font-weight: 500; line-height: 1.6; }
+
+    /* Metadatos en créditos */
+    .metadata-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .metadata-table tr { border-bottom: 1px solid var(--border-l); }
+    .metadata-table tr:last-child { border-bottom: none; }
+    .metadata-table td { padding: 8px 12px; }
+    .metadata-table td:first-child { color: var(--muted); width: 40%; font-size: 12px; }
+    .metadata-table td:last-child { color: var(--dark); font-weight: 500; }
+
+    .cc-block {
+      background: var(--cream);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .cc-block img { width: 88px; height: 31px; }
+    .cc-block p { font-size: 12.5px; color: var(--mid); line-height: 1.55; }
+
+    .footer-bar {
+      background: var(--red);
+      color: white;
+      text-align: center;
+      padding: 10px 24px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      margin-top: 16px;
+    }
+
+    /* ===== MODAL ===== */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--white);
+      border-radius: 14px;
+      padding: 32px;
+      max-width: 440px;
+      width: 90%;
+      position: relative;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    }
+    .modal h3 { font-family: var(--font-head); font-size: 20px; color: var(--dark); margin-bottom: 16px; }
+    .modal p { font-size: 13.5px; color: var(--mid); line-height: 1.65; margin-bottom: 8px; }
+    .modal p strong { color: var(--dark); }
+    .modal-close {
+      position: absolute;
+      top: 16px; right: 16px;
+      background: var(--cream);
+      border: none;
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ===== UTILITY ===== */
+    .activity-instruction { font-size: 12px; color: var(--muted); margin-bottom: 12px; font-style: italic; }
+    .hidden { display: none !important; }
+    em { color: var(--red); font-style: normal; }
+
+    @media (max-width: 900px) {
+      .odc-top { grid-template-columns: 1fr; }
+      .odc-right-col { flex-direction: row; flex-wrap: wrap; }
+      .zone-2, .zone-5, .zone-6 { flex: 1; min-width: 200px; }
+      .odc-bottom { grid-template-columns: 1fr; }
+      .portada-body { grid-template-columns: 1fr; }
+      .portada-right { display: none; }
+      .menu-grid { grid-template-columns: 1fr 1fr; }
+      .credits-layout { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
 
-  <!-- ============ BARRA DE PROGRESO GLOBAL ============ -->
-  <div class="progress-bar" id="progressBar">
-    <div class="progress-fill" id="progressFill"></div>
-  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
 
-  <!-- ============ NAVEGACIÓN GLOBAL ============ -->
-  <nav class="global-nav" id="globalNav">
-    <button class="nav-btn" id="btnPrev" aria-label="Pantalla anterior">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+  <nav class="global-nav">
+    <button class="nav-btn" id="btnPrev">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+      Anterior
     </button>
-    <button class="nav-btn nav-menu-btn" id="btnMenu" aria-label="Menú">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
-      <span>Menú</span>
+    <button class="nav-btn nav-menu-btn" id="btnMenu">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+      Menú
     </button>
-    <button class="nav-btn" id="btnNext" aria-label="Pantalla siguiente">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    <button class="nav-btn" id="btnNext">
+      Siguiente
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
     </button>
   </nav>
 
-  <!-- ============ CONTENEDOR PRINCIPAL ============ -->
-  <main class="odc-container" id="odcContainer">
+  <div class="odc-wrap">
 
-    <!-- ——— PANTALLA 1: PORTADA ——— -->
+    <!-- ========== PANTALLA 1: PORTADA ========== -->
     <section class="screen active" id="screen-0" data-screen="0">
-      <div class="screen-inner portada">
-        <div class="portada-bg">
-          <div class="wave wave-1"></div>
-          <div class="wave wave-2"></div>
-          <div class="wave wave-3"></div>
-          <div class="particle-field" id="particleField"></div>
+      <div class="portada-screen">
+        <div class="portada-header">
+          <div class="portada-logo-box">
+            <div>
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="display:block;margin:0 auto 4px"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 21V9"/></svg>
+              Logo Universidad<br>de Cundinamarca
+            </div>
+          </div>
+          <div class="portada-udec">
+            <strong>Universidad de Cundinamarca</strong>
+            <p>Instituto de Posgrados<br>Especialización en Inteligencia Artificial</p>
+          </div>
         </div>
-        <div class="portada-content">
-          <span class="portada-badge">Objeto Digital de Conocimiento</span>
-          <h1 class="portada-title">Reconocimiento Emocional<br>por Voz en Interfaces<br>Adaptativas</h1>
-          <div class="portada-meta">
-            <p class="portada-authors">
-              <strong>Autores:</strong> Yow Nicolás Guacaneme Molano · Miguel Angel Pardo López
-            </p>
-            <p class="portada-tutor">
-              <strong>Tutor:</strong> Jhondert Alberto Jaimes Rodriguez
-            </p>
-            <p class="portada-program">
-              Especialización en Inteligencia Artificial<br>
-              Universidad de Cundinamarca · 2026
-            </p>
+
+        <div class="portada-body">
+          <div class="portada-left">
+            <span class="portada-badge">Objeto Digital de Conocimiento</span>
+            <h1 class="portada-title">
+              Reconocimiento <em>Emocional</em><br>por Voz en<br>Interfaces Adaptativas
+            </h1>
+            <div class="portada-meta">
+              <div class="portada-meta-row">
+                <span>Autores</span>
+                <span>Yow Nicolás Guacaneme Molano · Miguel Angel Pardo López</span>
+              </div>
+              <div class="portada-meta-row">
+                <span>Tutor</span>
+                <span>Jhondert Alberto Jaimes Rodriguez</span>
+              </div>
+              <div class="portada-meta-row">
+                <span>Año</span>
+                <span>2026</span>
+              </div>
+            </div>
+            <div class="portada-actions">
+              <button class="btn btn-primary" id="btnIniciar">
+                Iniciar ODC
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </button>
+              <button class="btn btn-ghost" id="btnAyuda">Ayuda</button>
+            </div>
           </div>
-          <div class="portada-actions">
-            <button class="btn btn-primary" id="btnIniciar">
-              Iniciar
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </button>
-            <button class="btn btn-ghost" id="btnAyuda">
-              Ayuda
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01"/></svg>
-            </button>
+          <div class="portada-right">
+            <div class="portada-image-box">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+              <span>Imagen de portada<br><small>(reemplaza esta caja)</small></span>
+            </div>
+            <div class="portada-tags">
+              <span class="portada-tag">Speech Emotion Recognition</span>
+              <span class="portada-tag">CNN</span>
+              <span class="portada-tag">HCI</span>
+              <span class="portada-tag">Deep Learning</span>
+              <span class="portada-tag">Interfaces Adaptativas</span>
+            </div>
           </div>
+        </div>
+
+        <div class="portada-footer">
+          <span>Especialización en Inteligencia Artificial · Universidad de Cundinamarca · 2026</span>
+          <span class="portada-footer-red">Oficina de Educación Virtual y a Distancia</span>
         </div>
       </div>
     </section>
 
-    <!-- ——— PANTALLA 2: REA + POBLACIÓN ——— -->
+    <!-- ========== PANTALLA 2: REA + POBLACIÓN ========== -->
     <section class="screen" id="screen-1" data-screen="1">
-      <div class="screen-inner">
-        <div class="screen-header">
-          <span class="screen-tag">Pantalla 2</span>
-          <h2>Resultado Esperado de Aprendizaje</h2>
-        </div>
-        <div class="two-blocks">
-          <div class="block block-rea">
-            <div class="block-icon">🎯</div>
-            <h3>REA</h3>
-            <p>Al finalizar, el estudiante <strong>analiza</strong> los fundamentos y aplicaciones del reconocimiento emocional por voz mediante redes neuronales convolucionales en el contexto de la interacción humano-computador, <strong>a partir de</strong> evidencia científica reciente, <strong>evidenciado por</strong> la resolución correcta del 80% de las actividades evaluativas del ODC.</p>
+      <div class="odc-page">
+        <div class="odc-top">
+          <!-- Zona 1 -->
+          <div class="zone-1">
+            <div class="zone-1-header">
+              <span class="zone-num-badge">1</span>
+              <span class="zone-label">Imagen de interfaz</span>
+            </div>
+            <div class="zone-1-body">
+              <div class="img-placeholder" style="flex:1">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+                <span>Imagen / captura de pantalla del contenido<br><small>Reemplaza esta caja con tu imagen</small></span>
+              </div>
+            </div>
           </div>
-          <div class="block block-poblacion">
-            <div class="block-icon">👥</div>
-            <h3>Población Objetivo</h3>
-            <p>Estudiantes y profesionales de ingeniería de sistemas, inteligencia artificial y áreas afines, interesados en computación afectiva y diseño de interfaces adaptativas para la interacción humano-computador.</p>
-          </div>
-        </div>
-      </div>
-      <!-- Avatar -->
-      <div class="avatar-widget" data-avatar="rea">
-        <button class="avatar-toggle" aria-label="Mostrar/ocultar avatar">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>
-        </button>
-        <div class="avatar-body">
-          <div class="avatar-video-container">
-            <video class="avatar-video" controls preload="none" poster="">
-              <!-- <source src="assets/media/avatar-rea.mp4" type="video/mp4"> -->
-            </video>
-            <div class="avatar-placeholder-msg">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>
-              <span>Video del avatar pendiente</span>
+          <!-- Columna derecha -->
+          <div class="odc-right-col">
+            <div class="zone-2">
+              <span class="screen-number-label">Pantalla</span>
+              <div class="screen-number-value">02</div>
+              <div class="screen-number-title">REA + Población Objetivo</div>
+            </div>
+            <div class="zone-5">
+              <div class="zone-5-header">
+                <span class="zone-num-badge">5</span>
+                <span class="zone-label">Voces y audios</span>
+              </div>
+              <div class="zone-5-body">
+                <div class="avatar-placeholder">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>
+                  Video del avatar pendiente
+                </div>
+              </div>
+            </div>
+            <div class="zone-6">
+              <div class="zone-6-header">
+                <span class="zone-num-badge">6</span>
+                <span class="zone-label">Descripción de imagen</span>
+              </div>
+              <div class="zone-6-body">Descripción de la imagen o captura mostrada en la zona 1.</div>
             </div>
           </div>
         </div>
+
+        <div class="odc-bottom">
+          <!-- Zona 3 -->
+          <div class="zone-3">
+            <div class="zone-3-header">
+              <span class="zone-num-badge">3</span>
+              <span class="zone-label">Texto contenido</span>
+            </div>
+            <div class="zone-3-body">
+              <h2>Resultado Esperado de Aprendizaje</h2>
+              <p>Al finalizar, el estudiante <strong>analiza</strong> los fundamentos y aplicaciones del reconocimiento emocional por voz mediante redes neuronales convolucionales en el contexto de la interacción humano-computador, <strong>a partir de</strong> evidencia científica reciente, <strong>evidenciado por</strong> la resolución correcta del 80% de las actividades evaluativas del ODC.</p>
+              <h3>Población Objetivo</h3>
+              <p>Estudiantes y profesionales de ingeniería de sistemas, inteligencia artificial y áreas afines, interesados en computación afectiva y diseño de interfaces adaptativas para HCI.</p>
+            </div>
+          </div>
+          <!-- Zona 4 -->
+          <div class="zone-4">
+            <div class="zone-4-header">
+              <span class="zone-num-badge">4</span>
+              <span class="zone-label">Interactividad</span>
+            </div>
+            <div class="zone-4-body">
+              <h3>Metodología de exploración</h3>
+              <p style="font-size:13px;color:var(--mid);line-height:1.6;">Este ODC se recorre de forma <strong>libre y no lineal</strong> a través del menú. Cada módulo contiene textos, recursos visuales y una actividad interactiva. La evaluación final requiere 80% de aciertos para aprobar el REA.</p>
+              <br>
+              <button class="btn btn-primary btn-sm" id="btnGoMenu">Ir al Menú
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="zone-7">
+          <div class="zone-7-header">
+            <span class="zone-num-badge">7</span>
+            <span class="zone-label">Comentarios y observaciones</span>
+          </div>
+          <div class="zone-7-body">Esta pantalla presenta el REA y la población objetivo del ODC. Sirve como punto de entrada pedagógica para que el estudiante comprenda qué aprenderá y cuál es su perfil de usuario esperado.</div>
+        </div>
+        <div class="footer-bar">Oficina de Educación Virtual y a Distancia · Universidad de Cundinamarca</div>
       </div>
     </section>
 
-    <!-- ——— PANTALLA 3: MENÚ ——— -->
+    <!-- ========== PANTALLA 3: MENÚ ========== -->
     <section class="screen" id="screen-2" data-screen="2">
-      <div class="screen-inner">
-        <div class="screen-header">
-          <span class="screen-tag">Navegación</span>
-          <h2>Menú del ODC</h2>
-          <p class="screen-subtitle">Explora los módulos en el orden que prefieras</p>
-        </div>
+      <div class="menu-screen">
+        <span class="text-screen-tag">Navegación</span>
+        <h2 class="menu-title">Menú del ODC</h2>
+        <p class="menu-subtitle">Explora los módulos en el orden que prefieras</p>
         <div class="menu-grid">
-          <button class="menu-card" data-goto="3">
-            <span class="menu-number">01</span>
-            <span class="menu-label">El Problema</span>
-            <span class="menu-desc">Contexto y relevancia</span>
-          </button>
-          <button class="menu-card" data-goto="4">
-            <span class="menu-number">02</span>
-            <span class="menu-label">Fundamentos de SER</span>
-            <span class="menu-desc">Características acústicas</span>
-          </button>
-          <button class="menu-card" data-goto="5">
-            <span class="menu-number">03</span>
-            <span class="menu-label">CNNs para SER</span>
-            <span class="menu-desc">Arquitecturas y procesamiento</span>
-          </button>
-          <button class="menu-card" data-goto="6">
-            <span class="menu-number">04</span>
-            <span class="menu-label">Fusión y Ensambles</span>
-            <span class="menu-desc">Estrategias combinadas</span>
-          </button>
-          <button class="menu-card" data-goto="7">
-            <span class="menu-number">05</span>
-            <span class="menu-label">Aplicaciones en HCI</span>
-            <span class="menu-desc">Interfaces adaptativas</span>
-          </button>
-          <button class="menu-card" data-goto="8">
-            <span class="menu-number">06</span>
-            <span class="menu-label">Estado del Arte</span>
-            <span class="menu-desc">Datasets y tendencias</span>
-          </button>
+          <button class="menu-card" data-goto="3"><span class="menu-number">01</span><span class="menu-label">El Problema</span><span class="menu-desc">Contexto y relevancia</span></button>
+          <button class="menu-card" data-goto="4"><span class="menu-number">02</span><span class="menu-label">Fundamentos de SER</span><span class="menu-desc">Características acústicas</span></button>
+          <button class="menu-card" data-goto="5"><span class="menu-number">03</span><span class="menu-label">CNNs para SER</span><span class="menu-desc">Arquitecturas y procesamiento</span></button>
+          <button class="menu-card" data-goto="6"><span class="menu-number">04</span><span class="menu-label">Fusión y Ensambles</span><span class="menu-desc">Estrategias combinadas</span></button>
+          <button class="menu-card" data-goto="7"><span class="menu-number">05</span><span class="menu-label">Aplicaciones en HCI</span><span class="menu-desc">Interfaces adaptativas</span></button>
+          <button class="menu-card" data-goto="8"><span class="menu-number">06</span><span class="menu-label">Estado del Arte</span><span class="menu-desc">Datasets y tendencias</span></button>
           <div class="menu-divider"></div>
-          <button class="menu-card menu-card--secondary" data-goto="9">
-            <span class="menu-icon">📝</span>
-            <span class="menu-label">Evaluación Final</span>
-          </button>
-          <button class="menu-card menu-card--secondary" data-goto="10">
-            <span class="menu-icon">📌</span>
-            <span class="menu-label">Conclusión</span>
-          </button>
-          <button class="menu-card menu-card--secondary" data-goto="11">
-            <span class="menu-icon">📚</span>
-            <span class="menu-label">Referencias</span>
-          </button>
-          <button class="menu-card menu-card--secondary" data-goto="12">
-            <span class="menu-icon">©</span>
-            <span class="menu-label">Créditos</span>
-          </button>
+          <span class="menu-section-label">Secciones finales</span>
+          <button class="menu-card menu-card--secondary" data-goto="9"><span class="menu-icon">📝</span><span class="menu-label">Evaluación Final</span></button>
+          <button class="menu-card menu-card--secondary" data-goto="10"><span class="menu-icon">📌</span><span class="menu-label">Conclusión</span></button>
+          <button class="menu-card menu-card--secondary" data-goto="11"><span class="menu-icon">📚</span><span class="menu-label">Referencias</span></button>
+          <button class="menu-card menu-card--secondary" data-goto="12"><span class="menu-icon">©️</span><span class="menu-label">Créditos</span></button>
         </div>
       </div>
     </section>
 
-    <!-- ——— PANTALLA 4: MÓDULO 1 ——— -->
+    <!-- ========== PANTALLA 4: MÓDULO 1 ========== -->
     <section class="screen" id="screen-3" data-screen="3">
-      <div class="screen-inner module">
-        <div class="module-header">
-          <span class="module-number">Módulo 01</span>
-          <h2>El Problema: La Brecha Emocional en la Interacción Humano-Computador</h2>
-          <p class="module-purpose">Contextualizar por qué las interfaces actuales no responden al estado emocional del usuario.</p>
-        </div>
-        <div class="module-content">
-          <div class="content-block">
-            <h3>¿Por qué las máquinas no entienden nuestras emociones?</h3>
-            <p>La comunicación humana es inherentemente emocional. Cuando hablamos, nuestra voz transmite mucho más que palabras: el tono, el ritmo, la intensidad y las pausas revelan nuestro estado de ánimo. Sin embargo, la mayoría de los sistemas computacionales actuales procesan únicamente el contenido semántico del habla, ignorando por completo la carga emocional que lo acompaña.</p>
-            <p>Esta limitación genera una brecha significativa en la interacción humano-computador (HCI). Asistentes virtuales, plataformas de e-learning, sistemas de atención al cliente y dispositivos inteligentes operan de manera emocionalmente "ciega", ofreciendo respuestas genéricas independientemente de si el usuario está frustrado, ansioso o satisfecho.</p>
-          </div>
-          <div class="content-block">
-            <h3>La computación afectiva como respuesta</h3>
-            <p>La computación afectiva busca cerrar esta brecha desarrollando sistemas capaces de reconocer, interpretar y responder a las emociones humanas. Dentro de este campo, el reconocimiento de emociones en el habla (Speech Emotion Recognition o SER) se ha convertido en una de las líneas de investigación más activas.</p>
-            <p>Como señalan Khaparde y Verma (2026), a pesar de los avances significativos del deep learning en SER, persisten obstáculos importantes como datasets desbalanceados, sensibilidad al ruido y problemas de eficiencia computacional que deben superarse para lograr un rendimiento confiable en aplicaciones del mundo real.</p>
-            <button class="popup-trigger" data-popup="popup-affective">+ info</button>
-            <div class="popup-panel" id="popup-affective">
-              <h4>Computación Afectiva</h4>
-              <p>Término acuñado por Rosalind Picard (MIT, 1997). Se refiere al estudio y desarrollo de sistemas que pueden reconocer, interpretar, procesar y simular emociones humanas. Incluye modalidades como voz, expresión facial, texto, señales fisiológicas y movimiento corporal.</p>
+      <div class="odc-page">
+        <div class="odc-top">
+          <div class="zone-1">
+            <div class="zone-1-header"><span class="zone-num-badge">1</span><span class="zone-label">Imagen de interfaz — Módulo 01</span></div>
+            <div class="zone-1-body">
+              <div class="img-placeholder" style="flex:1;min-height:200px">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+                <span>Infografía / imagen sobre la brecha emocional en HCI</span>
+              </div>
+              <div class="stat-row" style="margin-top:14px">
+                <div class="stat-card"><span class="stat-value">93%</span><span class="stat-label">de la percepción emocional depende del tono, no de las palabras</span></div>
+                <div class="stat-card"><span class="stat-value">85.7%</span><span class="stat-label">de usuarios prefieren interfaces emocionalmente adaptativas</span></div>
+                <div class="stat-card"><span class="stat-value">6</span><span class="stat-label">emociones básicas universales (modelo de Ekman, 1992)</span></div>
+              </div>
             </div>
           </div>
-          <div class="content-block">
-            <h3>¿Por qué importa?</h3>
-            <div class="stat-cards">
-              <div class="stat-card">
-                <span class="stat-value">93%</span>
-                <span class="stat-label">de la comunicación emocional es no verbal (tono, ritmo, entonación)</span>
-              </div>
-              <div class="stat-card">
-                <span class="stat-value">+40%</span>
-                <span class="stat-label">de mejora en satisfacción del usuario al usar interfaces emocionalmente adaptativas</span>
-              </div>
-              <div class="stat-card">
-                <span class="stat-value">7</span>
-                <span class="stat-label">emociones básicas universales según el modelo de Ekman: alegría, tristeza, miedo, ira, asco, sorpresa y desprecio</span>
-              </div>
+          <div class="odc-right-col">
+            <div class="zone-2"><span class="screen-number-label">Pantalla</span><div class="screen-number-value">04</div><div class="screen-number-title">Módulo 01 · El Problema</div></div>
+            <div class="zone-5">
+              <div class="zone-5-header"><span class="zone-num-badge">5</span><span class="zone-label">Voces y audios</span></div>
+              <div class="zone-5-body"><div class="avatar-placeholder"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>Video del avatar pendiente</div></div>
+            </div>
+            <div class="zone-6">
+              <div class="zone-6-header"><span class="zone-num-badge">6</span><span class="zone-label">Descripción de imagen</span></div>
+              <div class="zone-6-body">Estadísticas clave sobre la brecha emocional en la interacción humano-computador y el impacto de las emociones en la comunicación.</div>
             </div>
           </div>
         </div>
-        <div class="module-activity" id="activity-m1">
-          <h3>🧩 Actividad: Verdadero o Falso</h3>
-          <div class="quiz-vf" id="quiz-m1">
-            <div class="vf-item" data-correct="false">
-              <p class="vf-statement">Los asistentes virtuales actuales como Siri o Alexa detectan automáticamente si el usuario está frustrado y adaptan su respuesta.</p>
-              <div class="vf-buttons">
-                <button class="vf-btn" data-answer="true">Verdadero</button>
-                <button class="vf-btn" data-answer="false">Falso</button>
-              </div>
-              <div class="vf-feedback"></div>
+
+        <div class="odc-bottom">
+          <div class="zone-3">
+            <div class="zone-3-header"><span class="zone-num-badge">3</span><span class="zone-label">Texto contenido</span></div>
+            <div class="zone-3-body">
+              <h2>La Brecha Emocional en la Interacción Humano-Computador</h2>
+              <p>La comunicación humana es inherentemente emocional. Cuando hablamos, nuestra voz transmite mucho más que palabras: el tono, el ritmo, la intensidad y las pausas revelan nuestro estado de ánimo. Sin embargo, la mayoría de los sistemas computacionales actuales procesan únicamente el contenido semántico del habla, ignorando por completo la carga emocional que lo acompaña.</p>
+              <h3>La computación afectiva como respuesta</h3>
+              <p>La computación afectiva busca cerrar esta brecha desarrollando sistemas capaces de reconocer, interpretar y responder a las emociones humanas. El reconocimiento de emociones en el habla (SER) se ha convertido en una de las líneas de investigación más activas.</p>
+              <button class="popup-trigger" data-popup="popup-affective">+ Computación Afectiva</button>
+              <div class="popup-panel" id="popup-affective"><h4>Computación Afectiva</h4><p>Término acuñado por Rosalind Picard (MIT, 1997). Incluye modalidades como voz, expresión facial, texto, señales fisiológicas y movimiento corporal.</p></div>
             </div>
-            <div class="vf-item" data-correct="true">
-              <p class="vf-statement">El reconocimiento de emociones en el habla (SER) analiza características como el tono, la energía y el ritmo de la voz para clasificar emociones.</p>
-              <div class="vf-buttons">
-                <button class="vf-btn" data-answer="true">Verdadero</button>
-                <button class="vf-btn" data-answer="false">Falso</button>
+          </div>
+          <div class="zone-4">
+            <div class="zone-4-header"><span class="zone-num-badge">4</span><span class="zone-label">Interactividad · Verdadero o Falso</span></div>
+            <div class="zone-4-body">
+              <h3>🧩 Actividad</h3>
+              <div class="vf-list">
+                <div class="vf-item" data-correct="false">
+                  <p class="vf-statement">Los asistentes virtuales actuales detectan automáticamente si el usuario está frustrado y adaptan su respuesta.</p>
+                  <div class="vf-buttons"><button class="vf-btn" data-answer="true">Verdadero</button><button class="vf-btn" data-answer="false">Falso</button></div>
+                  <div class="vf-feedback"></div>
+                </div>
+                <div class="vf-item" data-correct="true">
+                  <p class="vf-statement">El SER analiza características como tono, energía y ritmo para clasificar emociones.</p>
+                  <div class="vf-buttons"><button class="vf-btn" data-answer="true">Verdadero</button><button class="vf-btn" data-answer="false">Falso</button></div>
+                  <div class="vf-feedback"></div>
+                </div>
+                <div class="vf-item" data-correct="false">
+                  <p class="vf-statement">La computación afectiva se limita únicamente al reconocimiento facial.</p>
+                  <div class="vf-buttons"><button class="vf-btn" data-answer="true">Verdadero</button><button class="vf-btn" data-answer="false">Falso</button></div>
+                  <div class="vf-feedback"></div>
+                </div>
               </div>
-              <div class="vf-feedback"></div>
-            </div>
-            <div class="vf-item" data-correct="false">
-              <p class="vf-statement">La computación afectiva se limita únicamente al reconocimiento de emociones a través de la expresión facial.</p>
-              <div class="vf-buttons">
-                <button class="vf-btn" data-answer="true">Verdadero</button>
-                <button class="vf-btn" data-answer="false">Falso</button>
-              </div>
-              <div class="vf-feedback"></div>
             </div>
           </div>
         </div>
-      </div>
-      <!-- Avatar -->
-      <div class="avatar-widget" data-avatar="m1">
-        <button class="avatar-toggle" aria-label="Mostrar/ocultar avatar">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>
-        </button>
-        <div class="avatar-body">
-          <div class="avatar-video-container">
-            <video class="avatar-video" controls preload="none"><source src="" type="video/mp4"></video>
-            <div class="avatar-placeholder-msg">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>
-              <span>Video del avatar pendiente</span>
-            </div>
-          </div>
-        </div>
+
+        <div class="zone-7"><div class="zone-7-header"><span class="zone-num-badge">7</span><span class="zone-label">Comentarios y observaciones</span></div><div class="zone-7-body">Este módulo introduce el problema central de la investigación: la incapacidad de los sistemas actuales de HCI para reconocer y responder al estado emocional del usuario.</div></div>
+        <div class="footer-bar">Oficina de Educación Virtual y a Distancia · Universidad de Cundinamarca</div>
       </div>
     </section>
 
-    <!-- ——— PANTALLA 5: MÓDULO 2 ——— -->
+    <!-- ========== PANTALLA 5: MÓDULO 2 ========== -->
     <section class="screen" id="screen-4" data-screen="4">
-      <div class="screen-inner module">
-        <div class="module-header">
-          <span class="module-number">Módulo 02</span>
-          <h2>Fundamentos del Reconocimiento Emocional por Voz</h2>
-          <p class="module-purpose">Comprender qué es SER y cómo se extraen características acústicas del audio.</p>
-        </div>
-        <div class="module-content">
-          <div class="content-block">
-            <h3>¿Qué es el Speech Emotion Recognition (SER)?</h3>
-            <p>El SER es el proceso mediante el cual un sistema computacional identifica el estado emocional de un hablante a partir de su señal de voz. A diferencia del reconocimiento de voz convencional (que transcribe palabras), el SER se enfoca en el <em>cómo</em> se dice algo, no en <em>qué</em> se dice.</p>
-            <p>El pipeline típico de un sistema SER consta de tres etapas: adquisición de la señal de audio, extracción de características acústicas y clasificación emocional mediante algoritmos de aprendizaje automático o deep learning.</p>
-          </div>
-          <div class="content-block">
-            <h3>Características acústicas clave</h3>
-            <p>La calidad de un sistema SER depende en gran medida de las características que se extraen de la señal de voz. Según Chowdhury et al. (2025), características artesanales bien seleccionadas como MFCC, ZCR, RMSE y Chroma STFT pueden superar a modelos más complejos basados en espectrogramas.</p>
-            <div class="feature-grid">
-              <div class="feature-card">
-                <h4>MFCC</h4>
-                <p>Mel-Frequency Cepstral Coefficients. Representan el espectro de potencia a corto plazo de un sonido, simulando la percepción auditiva humana. Son la característica más utilizada en SER.</p>
+      <div class="odc-page">
+        <div class="odc-top">
+          <div class="zone-1">
+            <div class="zone-1-header"><span class="zone-num-badge">1</span><span class="zone-label">Imagen de interfaz — Módulo 02</span></div>
+            <div class="zone-1-body">
+              <div class="img-placeholder" style="min-height:160px;margin-bottom:14px">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+                <span>Diagrama del pipeline SER / espectrograma Mel</span>
               </div>
-              <div class="feature-card">
-                <h4>Mel Spectrogram</h4>
-                <p>Representación visual tiempo-frecuencia del audio en escala Mel. Permite tratar la señal de voz como una "imagen" que puede ser procesada por CNNs.</p>
-                <button class="popup-trigger" data-popup="popup-mel">+ info</button>
-                <div class="popup-panel" id="popup-mel">
-                  <h4>¿Por qué escala Mel?</h4>
-                  <p>El oído humano no percibe las frecuencias de forma lineal. La escala Mel ajusta las frecuencias para simular esta percepción no lineal, dando más resolución a frecuencias bajas (donde se concentra la información del habla) y menos a frecuencias altas.</p>
-                </div>
-              </div>
-              <div class="feature-card">
-                <h4>ZCR</h4>
-                <p>Zero Crossing Rate. Mide cuántas veces la señal cruza el eje cero por segundo. Valores altos indican sonidos fricativos o no vocálicos; ayuda a diferenciar emociones de alta vs baja energía.</p>
-              </div>
-              <div class="feature-card">
-                <h4>Pitch / F0</h4>
-                <p>Frecuencia fundamental de la voz. Varía significativamente entre emociones: la alegría y la ira tienden a tener pitch alto, mientras que la tristeza muestra pitch bajo y estable.</p>
-              </div>
-              <div class="feature-card">
-                <h4>Chroma STFT</h4>
-                <p>Representa la distribución de energía en las 12 clases de pitch cromáticas. Captura patrones tonales relacionados con la prosodia emocional.</p>
-              </div>
-              <div class="feature-card">
-                <h4>RMSE</h4>
-                <p>Root Mean Square Energy. Mide la energía/volumen de la señal. Emociones como ira y alegría tienen mayor energía que tristeza o aburrimiento.</p>
+              <div class="feat-grid">
+                <div class="feat-card"><h4>MFCC</h4><p>Simula percepción auditiva humana. La característica más usada en SER.</p></div>
+                <div class="feat-card"><h4>Mel Spectrogram</h4><p>Representación visual tiempo-frecuencia tratada como imagen por CNNs.</p></div>
+                <div class="feat-card"><h4>ZCR</h4><p>Cruces por cero; diferencia emociones de alta vs baja energía.</p></div>
+                <div class="feat-card"><h4>Pitch / F0</h4><p>Frecuencia fundamental; varía entre alegría/ira (alto) y tristeza (bajo).</p></div>
               </div>
             </div>
           </div>
-          <div class="content-block">
-            <h3>Modelos emocionales</h3>
-            <p>Los sistemas SER clasifican emociones usando dos enfoques principales: el modelo categórico (emociones discretas como alegría, tristeza, ira, miedo, neutral) y el modelo dimensional (valencia, arousal, dominancia). La mayoría de los datasets de referencia utilizan categorías discretas.</p>
+          <div class="odc-right-col">
+            <div class="zone-2"><span class="screen-number-label">Pantalla</span><div class="screen-number-value">05</div><div class="screen-number-title">Módulo 02 · Fundamentos SER</div></div>
+            <div class="zone-5"><div class="zone-5-header"><span class="zone-num-badge">5</span><span class="zone-label">Voces y audios</span></div><div class="zone-5-body"><div class="avatar-placeholder"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>Video del avatar pendiente</div></div></div>
+            <div class="zone-6"><div class="zone-6-header"><span class="zone-num-badge">6</span><span class="zone-label">Descripción de imagen</span></div><div class="zone-6-body">Las 4 características acústicas principales utilizadas en sistemas SER modernos para representar la señal de voz.</div></div>
           </div>
         </div>
-        <div class="module-activity" id="activity-m2">
-          <h3>🧩 Actividad: Relaciona cada característica</h3>
-          <div class="match-activity" id="match-m2">
-            <p class="activity-instruction">Selecciona la característica y luego su descripción correcta.</p>
-            <div class="match-pairs">
-              <div class="match-col match-terms">
-                <button class="match-item" data-match="mfcc">MFCC</button>
-                <button class="match-item" data-match="zcr">ZCR</button>
-                <button class="match-item" data-match="pitch">Pitch</button>
-                <button class="match-item" data-match="rmse">RMSE</button>
-              </div>
-              <div class="match-col match-defs">
-                <button class="match-item" data-match="rmse">Mide la energía o volumen de la señal de audio</button>
-                <button class="match-item" data-match="mfcc">Coeficientes que simulan la percepción auditiva humana</button>
-                <button class="match-item" data-match="pitch">Frecuencia fundamental que varía según la emoción</button>
-                <button class="match-item" data-match="zcr">Cuenta los cruces por cero de la señal por segundo</button>
-              </div>
+        <div class="odc-bottom">
+          <div class="zone-3">
+            <div class="zone-3-header"><span class="zone-num-badge">3</span><span class="zone-label">Texto contenido</span></div>
+            <div class="zone-3-body">
+              <h2>Fundamentos del Reconocimiento Emocional por Voz</h2>
+              <p>El SER identifica el estado emocional de un hablante a partir de su señal de voz. A diferencia del reconocimiento de voz convencional (que transcribe palabras), el SER se enfoca en el <em>cómo</em> se dice algo, no en <em>qué</em> se dice.</p>
+              <p>El pipeline típico: adquisición de señal → extracción de características acústicas → clasificación emocional.</p>
+              <button class="popup-trigger" data-popup="popup-mel">+ ¿Por qué escala Mel?</button>
+              <div class="popup-panel" id="popup-mel"><h4>Escala Mel</h4><p>El oído humano no percibe las frecuencias linealmente. La escala Mel da más resolución a frecuencias bajas (donde se concentra el habla) y menos a altas.</p></div>
             </div>
-            <div class="match-feedback" id="match-feedback-m2"></div>
           </div>
-        </div>
-      </div>
-      <!-- Avatar -->
-      <div class="avatar-widget" data-avatar="m2">
-        <button class="avatar-toggle" aria-label="Mostrar/ocultar avatar">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>
-        </button>
-        <div class="avatar-body">
-          <div class="avatar-video-container">
-            <video class="avatar-video" controls preload="none"><source src="" type="video/mp4"></video>
-            <div class="avatar-placeholder-msg">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>
-              <span>Video del avatar pendiente</span>
+          <div class="zone-4">
+            <div class="zone-4-header"><span class="zone-num-badge">4</span><span class="zone-label">Interactividad · Relaciona conceptos</span></div>
+            <div class="zone-4-body">
+              <h3>🧩 Relaciona cada característica</h3>
+              <p class="activity-instruction">Selecciona un término y luego su descripción.</p>
+              <div class="match-pairs">
+                <div class="match-col"><button class="match-item" data-match="mfcc">MFCC</button><button class="match-item" data-match="zcr">ZCR</button><button class="match-item" data-match="pitch">Pitch</button><button class="match-item" data-match="rmse">RMSE</button></div>
+                <div class="match-col"><button class="match-item" data-match="rmse">Mide energía del audio</button><button class="match-item" data-match="mfcc">Simula percepción auditiva</button><button class="match-item" data-match="pitch">Frecuencia fundamental</button><button class="match-item" data-match="zcr">Cruces por cero por segundo</button></div>
+              </div>
+              <div class="match-feedback" id="match-feedback-m2"></div>
             </div>
           </div>
         </div>
+        <div class="zone-7"><div class="zone-7-header"><span class="zone-num-badge">7</span><span class="zone-label">Comentarios y observaciones</span></div><div class="zone-7-body">Módulo sobre las bases teóricas del SER: qué es, cómo funciona su pipeline y cuáles son las características acústicas más relevantes para la clasificación emocional.</div></div>
+        <div class="footer-bar">Oficina de Educación Virtual y a Distancia · Universidad de Cundinamarca</div>
       </div>
     </section>
 
-    <!-- ——— PANTALLA 6: MÓDULO 3 ——— -->
+    <!-- ========== PANTALLA 6: MÓDULO 3 ========== -->
     <section class="screen" id="screen-5" data-screen="5">
-      <div class="screen-inner module">
-        <div class="module-header">
-          <span class="module-number">Módulo 03</span>
-          <h2>Redes Neuronales Convolucionales para SER</h2>
-          <p class="module-purpose">Comprender cómo las CNNs procesan señales de voz para clasificar emociones.</p>
-        </div>
-        <div class="module-content">
-          <div class="content-block">
-            <h3>¿Por qué CNNs para audio?</h3>
-            <p>Las Redes Neuronales Convolucionales (CNNs) fueron diseñadas originalmente para procesamiento de imágenes, pero su capacidad para detectar patrones espaciales las hace ideales para procesar espectrogramas de audio. Al convertir una señal de voz en un espectrograma de Mel, la señal temporal se transforma en una representación visual 2D donde el eje horizontal es el tiempo, el eje vertical es la frecuencia y la intensidad del color representa la energía.</p>
-            <p>Esta representación permite que las CNNs extraigan automáticamente patrones relevantes para la clasificación emocional, como variaciones en la distribución de frecuencias, cambios de energía temporal y patrones prosódicos.</p>
-          </div>
-          <div class="content-block">
-            <h3>Arquitectura básica de una CNN para SER</h3>
-            <p>Un modelo CNN típico para SER se compone de las siguientes capas:</p>
-            <div class="layer-stack">
-              <div class="layer-item">
-                <span class="layer-num">1</span>
-                <div class="layer-info">
-                  <h4>Capa de Entrada</h4>
-                  <p>Recibe el espectrograma como una matriz 2D (tiempo × frecuencia). También puede recibir características 1D directamente.</p>
-                </div>
-              </div>
-              <div class="layer-item">
-                <span class="layer-num">2</span>
-                <div class="layer-info">
-                  <h4>Capas Convolucionales</h4>
-                  <p>Aplican filtros que detectan patrones locales en el espectrograma. Las primeras capas capturan bordes y texturas; las más profundas, patrones complejos.</p>
-                </div>
-              </div>
-              <div class="layer-item">
-                <span class="layer-num">3</span>
-                <div class="layer-info">
-                  <h4>Capas de Pooling</h4>
-                  <p>Reducen la dimensionalidad manteniendo las características más relevantes. Max Pooling selecciona el valor máximo de cada ventana.</p>
-                </div>
-              </div>
-              <div class="layer-item">
-                <span class="layer-num">4</span>
-                <div class="layer-info">
-                  <h4>Dropout</h4>
-                  <p>Desactiva neuronas aleatoriamente durante el entrenamiento para evitar sobreajuste. Bhanbhro et al. (2025) demostraron que omitir dropout aumenta la pérdida de validación en un 15%.</p>
-                </div>
-              </div>
-              <div class="layer-item">
-                <span class="layer-num">5</span>
-                <div class="layer-info">
-                  <h4>Capas Fully Connected + Softmax</h4>
-                  <p>Combinan las características extraídas y clasifican la emoción. Softmax genera probabilidades para cada clase emocional.</p>
-                </div>
+      <div class="odc-page">
+        <div class="odc-top">
+          <div class="zone-1">
+            <div class="zone-1-header"><span class="zone-num-badge">1</span><span class="zone-label">Imagen de interfaz — Módulo 03</span></div>
+            <div class="zone-1-body">
+              <div class="img-placeholder" style="min-height:160px;margin-bottom:14px"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span>Diagrama de arquitectura CNN para SER</span></div>
+              <div class="layer-stack">
+                <div class="layer-item"><span class="layer-num">1</span><div class="layer-info"><h4>Entrada</h4><p>Espectrograma Mel como matriz 2D</p></div></div>
+                <div class="layer-item"><span class="layer-num">2</span><div class="layer-info"><h4>Convolución</h4><p>Extrae patrones locales del espectrograma</p></div></div>
+                <div class="layer-item"><span class="layer-num">3</span><div class="layer-info"><h4>Pooling</h4><p>Reduce dimensionalidad manteniendo características clave</p></div></div>
+                <div class="layer-item"><span class="layer-num">4</span><div class="layer-info"><h4>Dropout</h4><p>Regularización para evitar sobreajuste</p></div></div>
+                <div class="layer-item"><span class="layer-num">5</span><div class="layer-info"><h4>Fully Connected + Softmax</h4><p>Clasificación final de emociones</p></div></div>
               </div>
             </div>
           </div>
-          <div class="content-block">
-            <h3>Arquitecturas híbridas</h3>
-            <p>La investigación reciente muestra que combinar CNNs con otras arquitecturas mejora significativamente el rendimiento:</p>
-            <div class="hybrid-grid">
-              <div class="hybrid-card">
-                <h4>CNN-LSTM</h4>
-                <p>La CNN extrae características espaciales del espectrograma y el LSTM modela dependencias temporales. Bhanbhro et al. (2025) alcanzaron 96.5% de accuracy con este enfoque.</p>
+          <div class="odc-right-col">
+            <div class="zone-2"><span class="screen-number-label">Pantalla</span><div class="screen-number-value">06</div><div class="screen-number-title">Módulo 03 · CNNs para SER</div></div>
+            <div class="zone-5"><div class="zone-5-header"><span class="zone-num-badge">5</span><span class="zone-label">Voces y audios</span></div><div class="zone-5-body"><div class="avatar-placeholder"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>Video del avatar pendiente</div></div></div>
+            <div class="zone-6"><div class="zone-6-header"><span class="zone-num-badge">6</span><span class="zone-label">Descripción de imagen</span></div><div class="zone-6-body">Arquitectura en capas de una CNN para clasificación emocional, desde la entrada del espectrograma hasta la predicción final.</div></div>
+          </div>
+        </div>
+        <div class="odc-bottom">
+          <div class="zone-3">
+            <div class="zone-3-header"><span class="zone-num-badge">3</span><span class="zone-label">Texto contenido</span></div>
+            <div class="zone-3-body">
+              <h2>Redes Neuronales Convolucionales para SER</h2>
+              <p>Las CNNs, diseñadas para imágenes, son ideales para espectrogramas de audio. Al convertir una señal de voz en un espectrograma Mel, la señal temporal se transforma en una imagen 2D donde el eje horizontal es el tiempo, el vertical la frecuencia y la intensidad del color representa la energía.</p>
+              <h3>Arquitecturas híbridas</h3>
+              <div class="card-grid">
+                <div class="card-item"><h4>CNN-LSTM</h4><p>96.5% accuracy (Bhanbhro et al., 2025)</p></div>
+                <div class="card-item"><h4>CNN-BiLSTM + Atención</h4><p>98.1% accuracy; sin atención: 93.2%</p></div>
+                <div class="card-item"><h4>CNN-Transformer</h4><p>92.7% accuracy (Wei et al., 2025)</p></div>
+                <div class="card-item"><h4>wav2vec 2.0</h4><p>91.6% con aprendizaje auto-supervisado</p></div>
               </div>
-              <div class="hybrid-card">
-                <h4>CNN-BiLSTM + Atención</h4>
-                <p>BiLSTM procesa la secuencia en ambas direcciones y el mecanismo de atención pondera las partes más relevantes. Se alcanzó 98.1% de accuracy, y sin atención el rendimiento baja a 93.2%.</p>
+              <button class="popup-trigger" data-popup="popup-transformer">+ ¿Qué es un Transformer?</button>
+              <div class="popup-panel" id="popup-transformer"><h4>Transformer</h4><p>Arquitectura basada en auto-atención que procesa secuencias completas en paralelo. Modelos como wav2vec 2.0 aprenden representaciones del habla de forma auto-supervisada.</p></div>
+            </div>
+          </div>
+          <div class="zone-4">
+            <div class="zone-4-header"><span class="zone-num-badge">4</span><span class="zone-label">Interactividad · Ordenar capas</span></div>
+            <div class="zone-4-body">
+              <h3>🧩 Ordena las capas de una CNN</h3>
+              <p class="activity-instruction">Arrastra las capas para ordenarlas de entrada a salida.</p>
+              <div class="sort-list" id="sort-m3">
+                <div class="sort-item" data-order="3" draggable="true">Pooling (reducción dimensional)</div>
+                <div class="sort-item" data-order="5" draggable="true">Fully Connected + Softmax</div>
+                <div class="sort-item" data-order="1" draggable="true">Entrada (espectrograma Mel)</div>
+                <div class="sort-item" data-order="4" draggable="true">Dropout (regularización)</div>
+                <div class="sort-item" data-order="2" draggable="true">Convolución (extracción)</div>
               </div>
-              <div class="hybrid-card">
-                <h4>CNN-Transformer</h4>
-                <p>Wei et al. (2025) propusieron una fusión paralela de doble rama: wav2vec 2.0 para semántica contextual y CNN-Transformer para tiempo-frecuencia, logrando 92.7% de accuracy.</p>
-                <button class="popup-trigger" data-popup="popup-transformer">+ info</button>
-                <div class="popup-panel" id="popup-transformer">
-                  <h4>¿Qué es un Transformer?</h4>
-                  <p>Arquitectura basada en mecanismos de auto-atención que procesa secuencias completas en paralelo (a diferencia de LSTM que lo hace secuencialmente). Modelos como wav2vec 2.0 usan Transformers para aprender representaciones del habla de manera auto-supervisada.</p>
-                </div>
-              </div>
+              <button class="btn btn-primary btn-sm" id="checkSort-m3" style="margin-top:10px">Verificar</button>
+              <div class="sort-feedback" id="sort-feedback-m3"></div>
             </div>
           </div>
         </div>
-        <div class="module-activity" id="activity-m3">
-          <h3>🧩 Actividad: Ordena las capas de una CNN</h3>
-          <p class="activity-instruction">Arrastra las capas para ordenarlas correctamente de entrada a salida.</p>
-          <div class="sort-activity" id="sort-m3">
-            <div class="sort-item" data-order="3" draggable="true">Pooling (reducción dimensional)</div>
-            <div class="sort-item" data-order="5" draggable="true">Fully Connected + Softmax (clasificación)</div>
-            <div class="sort-item" data-order="1" draggable="true">Entrada (espectrograma Mel)</div>
-            <div class="sort-item" data-order="4" draggable="true">Dropout (regularización)</div>
-            <div class="sort-item" data-order="2" draggable="true">Convolución (extracción de patrones)</div>
-          </div>
-          <button class="btn btn-primary btn-check-sort" id="checkSort-m3">Verificar orden</button>
-          <div class="sort-feedback" id="sort-feedback-m3"></div>
-        </div>
-      </div>
-      <!-- Avatar -->
-      <div class="avatar-widget" data-avatar="m3">
-        <button class="avatar-toggle" aria-label="Mostrar/ocultar avatar">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>
-        </button>
-        <div class="avatar-body">
-          <div class="avatar-video-container">
-            <video class="avatar-video" controls preload="none"><source src="" type="video/mp4"></video>
-            <div class="avatar-placeholder-msg">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>
-              <span>Video del avatar pendiente</span>
-            </div>
-          </div>
-        </div>
+        <div class="zone-7"><div class="zone-7-header"><span class="zone-num-badge">7</span><span class="zone-label">Comentarios y observaciones</span></div><div class="zone-7-body">Módulo sobre arquitecturas CNN para SER: cómo procesan espectrogramas y los modelos híbridos que han demostrado mayor rendimiento.</div></div>
+        <div class="footer-bar">Oficina de Educación Virtual y a Distancia · Universidad de Cundinamarca</div>
       </div>
     </section>
 
-    <!-- ——— PANTALLA 7: MÓDULO 4 ——— -->
+    <!-- ========== PANTALLA 7: MÓDULO 4 ========== -->
     <section class="screen" id="screen-6" data-screen="6">
-      <div class="screen-inner module">
-        <div class="module-header">
-          <span class="module-number">Módulo 04</span>
-          <h2>Fusión de Características y Estrategias Ensemble</h2>
-          <p class="module-purpose">Entender estrategias para mejorar la precisión combinando fuentes de información.</p>
-        </div>
-        <div class="module-content">
-          <div class="content-block">
-            <h3>¿Por qué fusionar?</h3>
-            <p>Una sola característica acústica rara vez captura toda la complejidad emocional de la voz. La fusión de múltiples características y la combinación de modelos permiten que los sistemas SER capturen información complementaria, mejorando tanto la precisión como la robustez.</p>
-            <p>Raghu et al. (2026) demostraron que usar solo MFCC alcanza un 52.11% de accuracy, pero al combinar características híbridas (MFCC + ΔMFCC + ΔΔMFCC) la precisión sube a 70.73%, y con deep acoustic features llega a 81.23%.</p>
-          </div>
-          <div class="content-block">
-            <h3>Tipos de fusión</h3>
-            <div class="fusion-types">
-              <div class="fusion-card">
-                <h4>Fusión temprana (Feature-level)</h4>
-                <p>Combina las características de diferentes fuentes en un solo vector antes de la clasificación. Ejemplo: concatenar MFCCs + Chroma + ZCR en un vector único.</p>
-                <span class="fusion-tag">Ventaja: captura interacciones entre características</span>
+      <div class="odc-page">
+        <div class="odc-top">
+          <div class="zone-1">
+            <div class="zone-1-header"><span class="zone-num-badge">1</span><span class="zone-label">Imagen de interfaz — Módulo 04</span></div>
+            <div class="zone-1-body">
+              <div class="img-placeholder" style="min-height:160px;margin-bottom:14px"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="14" rx="2"/></svg><span>Diagrama de estrategias de fusión (temprana / tardía / híbrida)</span></div>
+              <div class="card-grid">
+                <div class="card-item"><h4>Fusión Temprana</h4><p>Solo MFCC: 52.11% → Híbrido: 70.73% → Deep features: 81.23% (Raghu et al., 2026)</p></div>
+                <div class="card-item"><h4>Fusión Tardía</h4><p>Soft voting de 5 CNNs: 77.70% (Kahhoul et al., 2025)</p></div>
+                <div class="card-item"><h4>Fusión Híbrida</h4><p>Atención multimodal: 97.64% (Nugroho et al., 2025)</p></div>
+                <div class="card-item"><h4>Ensemble Ligero</h4><p>CNN + CNN-BiLSTM: 97.57% RAVDESS, 100% TESS (Chowdhury et al., 2025)</p></div>
               </div>
-              <div class="fusion-card">
-                <h4>Fusión tardía (Decision-level)</h4>
-                <p>Cada modalidad se procesa independientemente y las predicciones se combinan al final mediante votación o promediado. Kahhoul et al. (2025) lograron 77.70% con soft voting de 5 modelos CNN.</p>
-                <span class="fusion-tag">Ventaja: cada modelo se optimiza por separado</span>
-                <button class="popup-trigger" data-popup="popup-voting">+ info</button>
-                <div class="popup-panel" id="popup-voting">
-                  <h4>Soft Voting vs Hard Voting</h4>
-                  <p><strong>Hard voting:</strong> cada modelo vota una clase y gana la mayoría. <strong>Soft voting:</strong> se promedian las probabilidades de todos los modelos y gana la clase con mayor probabilidad promedio. Soft voting suele ser más preciso porque aprovecha la confianza de cada modelo.</p>
+            </div>
+          </div>
+          <div class="odc-right-col">
+            <div class="zone-2"><span class="screen-number-label">Pantalla</span><div class="screen-number-value">07</div><div class="screen-number-title">Módulo 04 · Fusión y Ensambles</div></div>
+            <div class="zone-5"><div class="zone-5-header"><span class="zone-num-badge">5</span><span class="zone-label">Voces y audios</span></div><div class="zone-5-body"><div class="avatar-placeholder"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>Video del avatar pendiente</div></div></div>
+            <div class="zone-6"><div class="zone-6-header"><span class="zone-num-badge">6</span><span class="zone-label">Descripción de imagen</span></div><div class="zone-6-body">Comparativa de resultados de accuracy según tipo de fusión y estrategia ensemble en los estudios revisados.</div></div>
+          </div>
+        </div>
+        <div class="odc-bottom">
+          <div class="zone-3">
+            <div class="zone-3-header"><span class="zone-num-badge">3</span><span class="zone-label">Texto contenido</span></div>
+            <div class="zone-3-body">
+              <h2>Fusión de Características y Estrategias Ensemble</h2>
+              <p>Una sola característica acústica rara vez captura toda la complejidad emocional. La fusión de múltiples características y la combinación de modelos permiten capturar información complementaria, mejorando precisión y robustez.</p>
+              <h3>Tipos de fusión</h3>
+              <p><strong>Temprana (feature-level):</strong> combina características en un vector único antes de clasificar.<br>
+              <strong>Tardía (decision-level):</strong> cada modelo predice independientemente y se combinan por votación.<br>
+              <strong>Híbrida:</strong> usa atención para combinar representaciones de múltiples espectrogramas.</p>
+              <button class="popup-trigger" data-popup="popup-voting">+ Soft vs Hard Voting</button>
+              <div class="popup-panel" id="popup-voting"><h4>Soft vs Hard Voting</h4><p><strong>Hard:</strong> vota por mayoría de clases. <strong>Soft:</strong> promedia probabilidades — más preciso porque aprovecha la confianza de cada modelo.</p></div>
+            </div>
+          </div>
+          <div class="zone-4">
+            <div class="zone-4-header"><span class="zone-num-badge">4</span><span class="zone-label">Interactividad · Identifica la fusión</span></div>
+            <div class="zone-4-body">
+              <h3>🧩 Identifica el tipo de fusión</h3>
+              <div class="mc-list">
+                <div class="mc-item" data-correct="b">
+                  <p class="mc-question">Tres CNNs independientes sobre MFCCs, espectrogramas y Chroma. Se promedian sus probabilidades de salida.</p>
+                  <div class="mc-options"><button class="mc-btn" data-option="a">Temprana</button><button class="mc-btn" data-option="b">Tardía</button><button class="mc-btn" data-option="c">Híbrida</button></div>
+                  <div class="mc-feedback"></div>
+                </div>
+                <div class="mc-item" data-correct="a">
+                  <p class="mc-question">Se concatenan MFCC + ZCR + RMSE en un vector único y se pasa a una CNN.</p>
+                  <div class="mc-options"><button class="mc-btn" data-option="a">Temprana</button><button class="mc-btn" data-option="b">Tardía</button><button class="mc-btn" data-option="c">Ninguna</button></div>
+                  <div class="mc-feedback"></div>
                 </div>
               </div>
-              <div class="fusion-card">
-                <h4>Fusión híbrida</h4>
-                <p>Combina fusión temprana y tardía. Nugroho et al. (2025) fusionaron características prosódicas con representaciones Multi-taper Mel y CQT mediante mecanismo de atención, alcanzando 97.64% de accuracy.</p>
-                <span class="fusion-tag">Ventaja: lo mejor de ambos mundos</span>
-              </div>
-            </div>
-          </div>
-          <div class="content-block">
-            <h3>Estrategias Ensemble</h3>
-            <p>Un modelo ensemble combina múltiples modelos individuales para producir una predicción conjunta más robusta. Chowdhury et al. (2025) demostraron que un ensemble ligero de CNN y CNN-BiLSTM con características artesanales alcanzó resultados excepcionales: 97.57% en RAVDESS, 100% en TESS y 98.66% en CREMA-D, superando consistentemente a modelos individuales.</p>
-          </div>
-        </div>
-        <div class="module-activity" id="activity-m4">
-          <h3>🧩 Actividad: Identifica el tipo de fusión</h3>
-          <div class="quiz-mc" id="quiz-m4">
-            <div class="mc-item" data-correct="b">
-              <p class="mc-question">Un sistema entrena tres CNNs independientes sobre MFCCs, espectrogramas y Chroma respectivamente, y luego promedia sus probabilidades de salida. ¿Qué tipo de fusión es?</p>
-              <div class="mc-options">
-                <button class="mc-btn" data-option="a">Fusión temprana</button>
-                <button class="mc-btn" data-option="b">Fusión tardía</button>
-                <button class="mc-btn" data-option="c">Fusión híbrida</button>
-              </div>
-              <div class="mc-feedback"></div>
-            </div>
-            <div class="mc-item" data-correct="a">
-              <p class="mc-question">Un investigador concatena los vectores MFCC, ZCR y RMSE en un solo vector de características y lo pasa a una única CNN para clasificación. ¿Qué tipo de fusión es?</p>
-              <div class="mc-options">
-                <button class="mc-btn" data-option="a">Fusión temprana</button>
-                <button class="mc-btn" data-option="b">Fusión tardía</button>
-                <button class="mc-btn" data-option="c">Ninguna de las anteriores</button>
-              </div>
-              <div class="mc-feedback"></div>
-            </div>
-            <div class="mc-item" data-correct="c">
-              <p class="mc-question">Un sistema usa mecanismo de atención para combinar features prosódicos con representaciones de múltiples espectrogramas antes de la clasificación final. ¿Qué tipo de fusión es?</p>
-              <div class="mc-options">
-                <button class="mc-btn" data-option="a">Fusión temprana</button>
-                <button class="mc-btn" data-option="b">Fusión tardía</button>
-                <button class="mc-btn" data-option="c">Fusión híbrida</button>
-              </div>
-              <div class="mc-feedback"></div>
             </div>
           </div>
         </div>
-      </div>
-      <!-- Avatar -->
-      <div class="avatar-widget" data-avatar="m4">
-        <button class="avatar-toggle" aria-label="Mostrar/ocultar avatar">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>
-        </button>
-        <div class="avatar-body">
-          <div class="avatar-video-container">
-            <video class="avatar-video" controls preload="none"><source src="" type="video/mp4"></video>
-            <div class="avatar-placeholder-msg">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>
-              <span>Video del avatar pendiente</span>
-            </div>
-          </div>
-        </div>
+        <div class="zone-7"><div class="zone-7-header"><span class="zone-num-badge">7</span><span class="zone-label">Comentarios y observaciones</span></div><div class="zone-7-body">Módulo sobre estrategias de fusión de características y modelos ensemble; explica las ventajas de combinar múltiples fuentes de información para mejorar la precisión del SER.</div></div>
+        <div class="footer-bar">Oficina de Educación Virtual y a Distancia · Universidad de Cundinamarca</div>
       </div>
     </section>
 
-    <!-- ——— PANTALLA 8: MÓDULO 5 ——— -->
+    <!-- ========== PANTALLA 8: MÓDULO 5 ========== -->
     <section class="screen" id="screen-7" data-screen="7">
-      <div class="screen-inner module">
-        <div class="module-header">
-          <span class="module-number">Módulo 05</span>
-          <h2>Aplicaciones de SER en la Interacción Humano-Computador</h2>
-          <p class="module-purpose">Explorar cómo SER se integra en interfaces adaptativas reales.</p>
-        </div>
-        <div class="module-content">
-          <div class="content-block">
-            <h3>Interfaces adaptativas emocionales</h3>
-            <p>Una interfaz adaptativa emocional es aquella que detecta el estado emocional del usuario en tiempo real y modifica su comportamiento, contenido o presentación en respuesta. El SER es un componente clave de estos sistemas, ya que la voz es una modalidad natural, no invasiva y disponible en la mayoría de dispositivos.</p>
-            <p>Hu et al. (2025) demostraron que la clasificación sensible al género mejora significativamente la detección emocional, alcanzando 92% de accuracy para voces femeninas frente a 87% para masculinas, lo que evidencia la importancia de diseñar sistemas que se adapten a las características individuales del usuario.</p>
-          </div>
-          <div class="content-block">
-            <h3>Campos de aplicación</h3>
-            <div class="app-grid">
-              <div class="app-card">
-                <span class="app-icon">🎓</span>
-                <h4>E-learning adaptativo</h4>
-                <p>Plataformas educativas que detectan frustración o aburrimiento y ajustan el ritmo, la dificultad o el contenido. Si un estudiante muestra señales de confusión, el sistema puede ofrecer explicaciones adicionales o cambiar el formato de presentación.</p>
-              </div>
-              <div class="app-card">
-                <span class="app-icon">📞</span>
-                <h4>Call centers inteligentes</h4>
-                <p>Sistemas que monitorean la emoción del cliente durante la llamada y alertan al agente cuando detectan frustración o enojo, permitiendo una intervención proactiva antes de que el cliente escale su queja.</p>
-              </div>
-              <div class="app-card">
-                <span class="app-icon">🤖</span>
-                <h4>Asistentes virtuales empáticos</h4>
-                <p>Chatbots y asistentes de voz que adaptan su tono, velocidad de respuesta y contenido según el estado emocional detectado. El framework MIST (Boitel et al., 2025) integra texto, audio, imagen y movimiento para un reconocimiento multimodal más completo.</p>
-              </div>
-              <div class="app-card">
-                <span class="app-icon">🚗</span>
-                <h4>Seguridad vehicular</h4>
-                <p>Sistemas embebidos que detectan estrés, somnolencia o ira en el conductor a través de su voz, activando alertas o ajustando la configuración del vehículo para mayor seguridad.</p>
-              </div>
-              <div class="app-card">
-                <span class="app-icon">🏥</span>
-                <h4>Salud mental y telemedicina</h4>
-                <p>Herramientas de monitoreo emocional que detectan cambios en el estado anímico de pacientes durante sesiones de terapia virtual, proporcionando datos objetivos al profesional de salud.</p>
-              </div>
-              <div class="app-card">
-                <span class="app-icon">🌐</span>
-                <h4>Reconocimiento multilingüe</h4>
-                <p>Ortega-Beltrán et al. (2026) investigaron SER en idiomas romances (español e italiano), demostrando que estos idiomas están sub-representados en la investigación y que los modelos pueden adaptarse a condiciones "in-the-wild".</p>
+      <div class="odc-page">
+        <div class="odc-top">
+          <div class="zone-1">
+            <div class="zone-1-header"><span class="zone-num-badge">1</span><span class="zone-label">Imagen de interfaz — Módulo 05</span></div>
+            <div class="zone-1-body">
+              <div class="img-placeholder" style="min-height:140px;margin-bottom:14px"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="14" rx="2"/></svg><span>Diagrama de aplicaciones SER en HCI</span></div>
+              <div class="card-grid">
+                <div class="card-item"><span class="app-icon">🎓</span><h4>E-learning adaptativo</h4><p>Detecta frustración y ajusta ritmo o dificultad</p></div>
+                <div class="card-item"><span class="app-icon">📞</span><h4>Call centers inteligentes</h4><p>Alerta al agente cuando detecta enojo del cliente</p></div>
+                <div class="card-item"><span class="app-icon">🤖</span><h4>Asistentes empáticos</h4><p>Adaptan tono según emoción detectada</p></div>
+                <div class="card-item"><span class="app-icon">🚗</span><h4>Seguridad vehicular</h4><p>Detecta estrés o somnolencia en el conductor</p></div>
+                <div class="card-item"><span class="app-icon">🏥</span><h4>Salud mental</h4><p>Monitoreo emocional en sesiones de terapia virtual</p></div>
+                <div class="card-item"><span class="app-icon">🌐</span><h4>Multilingüe</h4><p>SER en español e italiano (Ortega-Beltrán et al., 2026)</p></div>
               </div>
             </div>
           </div>
-        </div>
-        <div class="module-activity" id="activity-m5">
-          <h3>🧩 Actividad: Caso breve</h3>
-          <div class="case-activity" id="case-m5">
-            <div class="case-scenario">
-              <h4>Escenario</h4>
-              <p>Una universidad quiere implementar una plataforma de e-learning que se adapte emocionalmente a sus estudiantes. El sistema debe detectar cuando un estudiante está frustrado durante una lección en video y tomar acciones. ¿Cuál de los siguientes componentes es el MÁS crítico para implementar primero?</p>
-            </div>
-            <div class="mc-options">
-              <button class="mc-btn" data-option="a">Un sistema de reconocimiento facial con cámara web</button>
-              <button class="mc-btn" data-option="b">Un módulo SER que analice el audio del micrófono durante interacciones de voz</button>
-              <button class="mc-btn" data-option="c">Un sensor fisiológico (pulsera) que mida la frecuencia cardíaca</button>
-            </div>
-            <div class="mc-feedback" id="case-feedback-m5"></div>
+          <div class="odc-right-col">
+            <div class="zone-2"><span class="screen-number-label">Pantalla</span><div class="screen-number-value">08</div><div class="screen-number-title">Módulo 05 · Aplicaciones en HCI</div></div>
+            <div class="zone-5"><div class="zone-5-header"><span class="zone-num-badge">5</span><span class="zone-label">Voces y audios</span></div><div class="zone-5-body"><div class="avatar-placeholder"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>Video del avatar pendiente</div></div></div>
+            <div class="zone-6"><div class="zone-6-header"><span class="zone-num-badge">6</span><span class="zone-label">Descripción de imagen</span></div><div class="zone-6-body">Seis dominios de aplicación donde SER transforma la interacción humano-computador con interfaces emocionalmente adaptativas.</div></div>
           </div>
         </div>
-      </div>
-      <!-- Avatar -->
-      <div class="avatar-widget" data-avatar="m5">
-        <button class="avatar-toggle" aria-label="Mostrar/ocultar avatar">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>
-        </button>
-        <div class="avatar-body">
-          <div class="avatar-video-container">
-            <video class="avatar-video" controls preload="none"><source src="" type="video/mp4"></video>
-            <div class="avatar-placeholder-msg">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>
-              <span>Video del avatar pendiente</span>
+        <div class="odc-bottom">
+          <div class="zone-3">
+            <div class="zone-3-header"><span class="zone-num-badge">3</span><span class="zone-label">Texto contenido</span></div>
+            <div class="zone-3-body">
+              <h2>Aplicaciones de SER en la Interacción Humano-Computador</h2>
+              <p>Una interfaz adaptativa emocional detecta el estado emocional del usuario en tiempo real y modifica su comportamiento, contenido o presentación en respuesta. La voz es una modalidad natural, no invasiva y disponible en la mayoría de dispositivos.</p>
+              <p>Hu et al. (2025) demostraron que la clasificación sensible al género mejora significativamente la detección: <strong>92% de accuracy</strong> para voces femeninas vs <strong>87%</strong> para masculinas, evidenciando la importancia de adaptar el sistema al usuario individual.</p>
+            </div>
+          </div>
+          <div class="zone-4">
+            <div class="zone-4-header"><span class="zone-num-badge">4</span><span class="zone-label">Interactividad · Caso breve</span></div>
+            <div class="zone-4-body">
+              <h3>🧩 Caso breve</h3>
+              <p style="font-size:13px;color:var(--dark);margin-bottom:10px;line-height:1.5;">Una universidad implementará e-learning emocional. ¿Qué componente es MÁS crítico primero?</p>
+              <div class="mc-options" id="case-m5-opts">
+                <button class="mc-btn" data-option="a">Sistema de reconocimiento facial</button>
+                <button class="mc-btn" data-option="b">Módulo SER de audio/micrófono</button>
+                <button class="mc-btn" data-option="c">Sensor fisiológico (pulsera)</button>
+              </div>
+              <div class="mc-feedback" id="case-feedback-m5" data-correct="b"></div>
             </div>
           </div>
         </div>
+        <div class="zone-7"><div class="zone-7-header"><span class="zone-num-badge">7</span><span class="zone-label">Comentarios y observaciones</span></div><div class="zone-7-body">Módulo sobre las aplicaciones prácticas del SER en interfaces adaptativas: e-learning, call centers, asistentes virtuales, vehículos y salud mental.</div></div>
+        <div class="footer-bar">Oficina de Educación Virtual y a Distancia · Universidad de Cundinamarca</div>
       </div>
     </section>
 
-    <!-- ——— PANTALLA 9: MÓDULO 6 ——— -->
+    <!-- ========== PANTALLA 9: MÓDULO 6 ========== -->
     <section class="screen" id="screen-8" data-screen="8">
-      <div class="screen-inner module">
-        <div class="module-header">
-          <span class="module-number">Módulo 06</span>
-          <h2>Estado del Arte: Datasets y Tendencias</h2>
-          <p class="module-purpose">Conocer los datasets de referencia y las tendencias actuales en investigación.</p>
-        </div>
-        <div class="module-content">
-          <div class="content-block">
-            <h3>Datasets de referencia en SER</h3>
-            <p>La calidad y diversidad de los datasets es fundamental para entrenar y evaluar sistemas SER. Los más utilizados en la literatura reciente son:</p>
-            <div class="dataset-table">
-              <div class="dataset-row dataset-header">
-                <span>Dataset</span>
-                <span>Idioma</span>
-                <span>Tipo</span>
-                <span>Emociones</span>
+      <div class="odc-page">
+        <div class="odc-top">
+          <div class="zone-1">
+            <div class="zone-1-header"><span class="zone-num-badge">1</span><span class="zone-label">Imagen de interfaz — Módulo 06</span></div>
+            <div class="zone-1-body">
+              <div class="img-placeholder" style="min-height:120px;margin-bottom:14px"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="14" rx="2"/></svg><span>Tabla comparativa de datasets SER</span></div>
+              <div class="dataset-table">
+                <div class="dataset-row dataset-header"><span>Dataset</span><span>Idioma</span><span>Tipo</span><span>Emociones</span></div>
+                <div class="dataset-row"><span><strong>RAVDESS</strong></span><span>Inglés</span><span>Actuado</span><span>8 emociones</span></div>
+                <div class="dataset-row"><span><strong>IEMOCAP</strong></span><span>Inglés</span><span>Semi-natural</span><span>4–5 emociones</span></div>
+                <div class="dataset-row"><span><strong>CREMA-D</strong></span><span>Inglés</span><span>Actuado</span><span>6 emociones</span></div>
+                <div class="dataset-row"><span><strong>EMO-DB</strong></span><span>Alemán</span><span>Actuado</span><span>7 emociones</span></div>
+                <div class="dataset-row"><span><strong>TESS</strong></span><span>Inglés</span><span>Actuado</span><span>7 emociones</span></div>
               </div>
-              <div class="dataset-row">
-                <span><strong>RAVDESS</strong></span>
-                <span>Inglés</span>
-                <span>Actuado</span>
-                <span>8 (neutral, calma, felicidad, tristeza, ira, miedo, asco, sorpresa)</span>
-              </div>
-              <div class="dataset-row">
-                <span><strong>IEMOCAP</strong></span>
-                <span>Inglés</span>
-                <span>Semi-natural</span>
-                <span>4-5 (neutral, felicidad, tristeza, ira, frustración)</span>
-              </div>
-              <div class="dataset-row">
-                <span><strong>CREMA-D</strong></span>
-                <span>Inglés</span>
-                <span>Actuado</span>
-                <span>6 (neutral, felicidad, tristeza, ira, miedo, asco)</span>
-              </div>
-              <div class="dataset-row">
-                <span><strong>EMO-DB</strong></span>
-                <span>Alemán</span>
-                <span>Actuado</span>
-                <span>7 (neutral, ira, aburrimiento, asco, miedo, felicidad, tristeza)</span>
-              </div>
-              <div class="dataset-row">
-                <span><strong>TESS</strong></span>
-                <span>Inglés</span>
-                <span>Actuado</span>
-                <span>7 (neutral, felicidad, tristeza, ira, miedo, asco, sorpresa)</span>
-              </div>
-              <div class="dataset-row">
-                <span><strong>SAVEE</strong></span>
-                <span>Inglés</span>
-                <span>Actuado</span>
-                <span>7 (mismo que TESS)</span>
-              </div>
-            </div>
-            <button class="popup-trigger" data-popup="popup-acted">+ info</button>
-            <div class="popup-panel" id="popup-acted">
-              <h4>Actuado vs. Espontáneo</h4>
-              <p><strong>Actuado:</strong> actores interpretan emociones controladas. Ventaja: etiquetas claras. Desventaja: no refleja emociones reales. <strong>Espontáneo/In-the-wild:</strong> grabaciones de interacciones reales. Ventaja: ecología válida. Desventaja: etiquetas ambiguas y emociones menos diferenciadas. IEMOCAP es semi-natural (escenas improvisadas).</p>
+              <button class="popup-trigger" data-popup="popup-acted">+ Actuado vs. Espontáneo</button>
+              <div class="popup-panel" id="popup-acted"><h4>Actuado vs. Espontáneo</h4><p><strong>Actuado:</strong> actores interpretan emociones; etiquetas claras pero artificiales. <strong>Espontáneo:</strong> interacciones reales; más ecológico pero difícil de etiquetar. IEMOCAP es semi-natural (escenas improvisadas).</p></div>
             </div>
           </div>
-          <div class="content-block">
-            <h3>Métricas de evaluación</h3>
-            <p>Los modelos SER se evalúan con múltiples métricas para obtener una visión completa de su rendimiento:</p>
-            <div class="metric-list">
-              <div class="metric-item">
-                <strong>Accuracy (WA):</strong> porcentaje de predicciones correctas sobre el total. Puede ser engañosa con datasets desbalanceados.
-              </div>
-              <div class="metric-item">
-                <strong>Unweighted Accuracy (UA):</strong> promedio de accuracy por clase, dando igual peso a cada emoción independientemente de su frecuencia.
-              </div>
-              <div class="metric-item">
-                <strong>F1-Score:</strong> media armónica entre precisión y recall. Más informativa que accuracy cuando las clases están desbalanceadas.
-              </div>
-              <div class="metric-item">
-                <strong>AUC-ROC:</strong> área bajo la curva ROC. Mide la capacidad discriminativa del modelo independientemente del umbral de decisión.
-              </div>
-            </div>
-          </div>
-          <div class="content-block">
-            <h3>Tendencias actuales</h3>
-            <p>Aggarwal et al. (2026) identifican las siguientes tendencias en la investigación SER: los modelos basados en Transformers (como Wav2Vec 2.0) demuestran adaptabilidad superior con rendimiento de estado del arte, alcanzando 91.6% con aprendizaje auto-supervisado. Además, los Mel-espectrogramas superan a los MFCCs tradicionales por 3-5 puntos porcentuales, y las técnicas de aumento de datos son esenciales para mejorar la robustez del modelo.</p>
+          <div class="odc-right-col">
+            <div class="zone-2"><span class="screen-number-label">Pantalla</span><div class="screen-number-value">09</div><div class="screen-number-title">Módulo 06 · Estado del Arte</div></div>
+            <div class="zone-5"><div class="zone-5-header"><span class="zone-num-badge">5</span><span class="zone-label">Voces y audios</span></div><div class="zone-5-body"><div class="avatar-placeholder"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>Video del avatar pendiente</div></div></div>
+            <div class="zone-6"><div class="zone-6-header"><span class="zone-num-badge">6</span><span class="zone-label">Descripción de imagen</span></div><div class="zone-6-body">Datasets de referencia más utilizados en la investigación reciente en SER, con idioma, tipo y número de emociones.</div></div>
           </div>
         </div>
-        <div class="module-activity" id="activity-m6">
-          <h3>🧩 Actividad: Selección múltiple</h3>
-          <div class="quiz-mc" id="quiz-m6">
-            <div class="mc-item" data-correct="b">
-              <p class="mc-question">¿Cuál dataset es semi-natural (basado en improvisaciones) en lugar de completamente actuado?</p>
-              <div class="mc-options">
-                <button class="mc-btn" data-option="a">RAVDESS</button>
-                <button class="mc-btn" data-option="b">IEMOCAP</button>
-                <button class="mc-btn" data-option="c">TESS</button>
+        <div class="odc-bottom">
+          <div class="zone-3">
+            <div class="zone-3-header"><span class="zone-num-badge">3</span><span class="zone-label">Texto contenido</span></div>
+            <div class="zone-3-body">
+              <h2>Estado del Arte: Datasets y Tendencias</h2>
+              <h3>Métricas de evaluación</h3>
+              <div class="metric-list">
+                <div class="metric-item"><strong>Accuracy (WA):</strong> predicciones correctas sobre el total. Puede ser engañosa con datos desbalanceados.</div>
+                <div class="metric-item"><strong>UA (Unweighted Accuracy):</strong> promedio de accuracy por clase, dando igual peso a cada emoción.</div>
+                <div class="metric-item"><strong>F1-Score:</strong> media armónica entre precisión y recall. Más informativa con clases desbalanceadas.</div>
               </div>
-              <div class="mc-feedback"></div>
+              <h3 style="margin-top:12px">Tendencias</h3>
+              <p>Transformers (Wav2Vec 2.0): 91.6% con aprendizaje auto-supervisado. Mel-espectrogramas superan MFCCs por 3–5 puntos. El aumento de datos es esencial para robustez (Aggarwal et al., 2026).</p>
             </div>
-            <div class="mc-item" data-correct="c">
-              <p class="mc-question">¿Qué métrica es más adecuada cuando las clases emocionales están desbalanceadas?</p>
-              <div class="mc-options">
-                <button class="mc-btn" data-option="a">Accuracy (WA)</button>
-                <button class="mc-btn" data-option="b">Recall individual</button>
-                <button class="mc-btn" data-option="c">F1-Score o UA</button>
+          </div>
+          <div class="zone-4">
+            <div class="zone-4-header"><span class="zone-num-badge">4</span><span class="zone-label">Interactividad · Selección múltiple</span></div>
+            <div class="zone-4-body">
+              <h3>🧩 Selección múltiple</h3>
+              <div class="mc-list">
+                <div class="mc-item" data-correct="b">
+                  <p class="mc-question">¿Cuál dataset es semi-natural?</p>
+                  <div class="mc-options"><button class="mc-btn" data-option="a">RAVDESS</button><button class="mc-btn" data-option="b">IEMOCAP</button><button class="mc-btn" data-option="c">TESS</button></div>
+                  <div class="mc-feedback"></div>
+                </div>
+                <div class="mc-item" data-correct="a">
+                  <p class="mc-question">¿Qué representación supera a los MFCCs por 3–5 puntos?</p>
+                  <div class="mc-options"><button class="mc-btn" data-option="a">Mel-espectrogramas</button><button class="mc-btn" data-option="b">Chroma STFT</button><button class="mc-btn" data-option="c">ZCR</button></div>
+                  <div class="mc-feedback"></div>
+                </div>
               </div>
-              <div class="mc-feedback"></div>
-            </div>
-            <div class="mc-item" data-correct="a">
-              <p class="mc-question">Según las tendencias recientes, ¿qué representación de audio supera a los MFCCs por 3-5 puntos?</p>
-              <div class="mc-options">
-                <button class="mc-btn" data-option="a">Mel-espectrogramas</button>
-                <button class="mc-btn" data-option="b">Chroma STFT</button>
-                <button class="mc-btn" data-option="c">Zero Crossing Rate</button>
-              </div>
-              <div class="mc-feedback"></div>
             </div>
           </div>
         </div>
-      </div>
-      <!-- Avatar -->
-      <div class="avatar-widget" data-avatar="m6">
-        <button class="avatar-toggle" aria-label="Mostrar/ocultar avatar">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>
-        </button>
-        <div class="avatar-body">
-          <div class="avatar-video-container">
-            <video class="avatar-video" controls preload="none"><source src="" type="video/mp4"></video>
-            <div class="avatar-placeholder-msg">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>
-              <span>Video del avatar pendiente</span>
-            </div>
-          </div>
-        </div>
+        <div class="zone-7"><div class="zone-7-header"><span class="zone-num-badge">7</span><span class="zone-label">Comentarios y observaciones</span></div><div class="zone-7-body">Módulo sobre datasets de referencia, métricas de evaluación y tendencias actuales en investigación SER con CNNs.</div></div>
+        <div class="footer-bar">Oficina de Educación Virtual y a Distancia · Universidad de Cundinamarca</div>
       </div>
     </section>
 
-    <!-- ——— PANTALLA 10: EVALUACIÓN FINAL ——— -->
+    <!-- ========== PANTALLA 10: EVALUACIÓN FINAL ========== -->
     <section class="screen" id="screen-9" data-screen="9">
-      <div class="screen-inner">
-        <div class="screen-header">
-          <span class="screen-tag">Evaluación</span>
-          <h2>Evaluación Final</h2>
-          <p class="screen-subtitle">8 preguntas alineadas al REA — necesitas 80% (mínimo 6/8) para aprobar</p>
-        </div>
-        <div class="eval-container" id="evalContainer">
-          <div class="eval-progress">
+      <div class="eval-screen">
+        <div class="eval-top">
+          <div>
+            <span class="text-screen-tag">Evaluación</span>
+            <h2 class="text-screen-title" style="margin-bottom:4px">Evaluación Final</h2>
+            <p style="font-size:13px;color:var(--muted)">8 preguntas · necesitas 80% (6/8) para aprobar</p>
+          </div>
+          <div class="eval-progress-wrap">
             <span id="evalScore">0 / 8</span>
-            <div class="eval-bar"><div class="eval-bar-fill" id="evalBarFill"></div></div>
+            <div class="eval-bar"><div class="eval-bar-fill" id="evalBarFill" style="width:0%"></div></div>
           </div>
-
-          <!-- P1 -->
-          <div class="eval-question" data-correct="c">
-            <p class="eval-q-number">Pregunta 1 de 8</p>
-            <p class="mc-question">¿Cuál es el objetivo principal del Speech Emotion Recognition (SER)?</p>
-            <div class="mc-options">
-              <button class="mc-btn" data-option="a">Transcribir las palabras que dice el hablante</button>
-              <button class="mc-btn" data-option="b">Identificar el idioma en el que habla una persona</button>
-              <button class="mc-btn" data-option="c">Detectar el estado emocional del hablante a partir de su voz</button>
-            </div>
-            <div class="mc-feedback"></div>
-          </div>
-
-          <!-- P2 -->
-          <div class="eval-question" data-correct="b">
-            <p class="eval-q-number">Pregunta 2 de 8</p>
-            <p class="mc-question">Los coeficientes MFCC (Mel-Frequency Cepstral Coefficients) son ampliamente usados en SER porque:</p>
-            <div class="mc-options">
-              <button class="mc-btn" data-option="a">Son la única forma de representar audio digitalmente</button>
-              <button class="mc-btn" data-option="b">Simulan la percepción auditiva humana y capturan información espectral relevante</button>
-              <button class="mc-btn" data-option="c">Miden directamente la emoción sin necesidad de un clasificador</button>
-            </div>
-            <div class="mc-feedback"></div>
-          </div>
-
-          <!-- P3 -->
-          <div class="eval-question" data-correct="a">
-            <p class="eval-q-number">Pregunta 3 de 8</p>
-            <p class="mc-question">En una arquitectura CNN para SER, ¿cuál es la función principal de las capas convolucionales?</p>
-            <div class="mc-options">
-              <button class="mc-btn" data-option="a">Extraer patrones locales y características relevantes del espectrograma</button>
-              <button class="mc-btn" data-option="b">Reducir la dimensionalidad de la entrada</button>
-              <button class="mc-btn" data-option="c">Generar la probabilidad final de cada emoción</button>
-            </div>
-            <div class="mc-feedback"></div>
-          </div>
-
-          <!-- P4 -->
-          <div class="eval-question" data-correct="b">
-            <p class="eval-q-number">Pregunta 4 de 8</p>
-            <p class="mc-question">¿Qué ventaja aporta un modelo híbrido CNN-BiLSTM frente a una CNN sola?</p>
-            <div class="mc-options">
-              <button class="mc-btn" data-option="a">Reduce el tamaño del dataset necesario para entrenar</button>
-              <button class="mc-btn" data-option="b">La CNN extrae patrones espaciales y el BiLSTM captura dependencias temporales bidireccionales</button>
-              <button class="mc-btn" data-option="c">Elimina la necesidad de extraer características acústicas</button>
-            </div>
-            <div class="mc-feedback"></div>
-          </div>
-
-          <!-- P5 -->
-          <div class="eval-question" data-correct="c">
-            <p class="eval-q-number">Pregunta 5 de 8</p>
-            <p class="mc-question">En la fusión tardía (decision-level), ¿en qué momento se combinan las diferentes fuentes de información?</p>
-            <div class="mc-options">
-              <button class="mc-btn" data-option="a">Antes de la extracción de características</button>
-              <button class="mc-btn" data-option="b">Durante el entrenamiento conjunto de un único modelo</button>
-              <button class="mc-btn" data-option="c">Después de que cada modelo individual genera su predicción</button>
-            </div>
-            <div class="mc-feedback"></div>
-          </div>
-
-          <!-- P6 -->
-          <div class="eval-question" data-correct="a">
-            <p class="eval-q-number">Pregunta 6 de 8</p>
-            <p class="mc-question">¿Cuál es una aplicación directa de SER en interfaces adaptativas para e-learning?</p>
-            <div class="mc-options">
-              <button class="mc-btn" data-option="a">Detectar frustración del estudiante y ajustar la dificultad o formato del contenido</button>
-              <button class="mc-btn" data-option="b">Traducir automáticamente el contenido a otros idiomas</button>
-              <button class="mc-btn" data-option="c">Generar resúmenes automáticos de las clases grabadas</button>
-            </div>
-            <div class="mc-feedback"></div>
-          </div>
-
-          <!-- P7 -->
-          <div class="eval-question" data-correct="b">
-            <p class="eval-q-number">Pregunta 7 de 8</p>
-            <p class="mc-question">¿Por qué IEMOCAP se considera un dataset semi-natural a diferencia de RAVDESS o TESS?</p>
-            <div class="mc-options">
-              <button class="mc-btn" data-option="a">Porque contiene grabaciones de conversaciones telefónicas reales</button>
-              <button class="mc-btn" data-option="b">Porque utiliza escenas improvisadas entre actores, no lecturas guionizadas</button>
-              <button class="mc-btn" data-option="c">Porque fue grabado en ambientes ruidosos sin control acústico</button>
-            </div>
-            <div class="mc-feedback"></div>
-          </div>
-
-          <!-- P8 -->
-          <div class="eval-question" data-correct="c">
-            <p class="eval-q-number">Pregunta 8 de 8</p>
-            <p class="mc-question">Según las tendencias actuales, ¿qué afirmación es correcta?</p>
-            <div class="mc-options">
-              <button class="mc-btn" data-option="a">Los MFCCs siguen siendo superiores a cualquier representación visual del audio</button>
-              <button class="mc-btn" data-option="b">El deep learning ha resuelto completamente los desafíos del SER en aplicaciones reales</button>
-              <button class="mc-btn" data-option="c">Los modelos basados en Transformers (como Wav2Vec 2.0) demuestran adaptabilidad superior y rendimiento estado del arte</button>
-            </div>
-            <div class="mc-feedback"></div>
-          </div>
-
-          <!-- Resultado final -->
+        </div>
+        <div class="eval-q-wrap" id="evalContainer">
+          <div class="eval-question" data-correct="c"><p class="eval-q-number">Pregunta 1 de 8</p><p class="mc-question">¿Cuál es el objetivo principal del Speech Emotion Recognition (SER)?</p><div class="mc-options"><button class="mc-btn" data-option="a">Transcribir las palabras que dice el hablante</button><button class="mc-btn" data-option="b">Identificar el idioma en que habla una persona</button><button class="mc-btn" data-option="c">Detectar el estado emocional del hablante a partir de su voz</button></div><div class="mc-feedback"></div></div>
+          <div class="eval-question" data-correct="b"><p class="eval-q-number">Pregunta 2 de 8</p><p class="mc-question">Los MFCC son ampliamente usados en SER porque:</p><div class="mc-options"><button class="mc-btn" data-option="a">Son la única forma de representar audio digitalmente</button><button class="mc-btn" data-option="b">Simulan la percepción auditiva humana y capturan información espectral</button><button class="mc-btn" data-option="c">Miden directamente la emoción sin clasificador</button></div><div class="mc-feedback"></div></div>
+          <div class="eval-question" data-correct="a"><p class="eval-q-number">Pregunta 3 de 8</p><p class="mc-question">¿Cuál es la función principal de las capas convolucionales en una CNN para SER?</p><div class="mc-options"><button class="mc-btn" data-option="a">Extraer patrones locales del espectrograma</button><button class="mc-btn" data-option="b">Reducir la dimensionalidad de la entrada</button><button class="mc-btn" data-option="c">Generar la probabilidad final de cada emoción</button></div><div class="mc-feedback"></div></div>
+          <div class="eval-question" data-correct="b"><p class="eval-q-number">Pregunta 4 de 8</p><p class="mc-question">¿Qué ventaja aporta un modelo híbrido CNN-BiLSTM frente a una CNN sola?</p><div class="mc-options"><button class="mc-btn" data-option="a">Reduce el tamaño del dataset necesario</button><button class="mc-btn" data-option="b">La CNN extrae patrones espaciales y el BiLSTM captura dependencias temporales</button><button class="mc-btn" data-option="c">Elimina la necesidad de características acústicas</button></div><div class="mc-feedback"></div></div>
+          <div class="eval-question" data-correct="c"><p class="eval-q-number">Pregunta 5 de 8</p><p class="mc-question">En la fusión tardía, ¿en qué momento se combinan las fuentes de información?</p><div class="mc-options"><button class="mc-btn" data-option="a">Antes de la extracción de características</button><button class="mc-btn" data-option="b">Durante el entrenamiento conjunto</button><button class="mc-btn" data-option="c">Después de que cada modelo genera su predicción</button></div><div class="mc-feedback"></div></div>
+          <div class="eval-question" data-correct="a"><p class="eval-q-number">Pregunta 6 de 8</p><p class="mc-question">¿Cuál es una aplicación directa de SER en e-learning?</p><div class="mc-options"><button class="mc-btn" data-option="a">Detectar frustración y ajustar dificultad o formato del contenido</button><button class="mc-btn" data-option="b">Traducir automáticamente el contenido a otros idiomas</button><button class="mc-btn" data-option="c">Generar resúmenes automáticos de las clases</button></div><div class="mc-feedback"></div></div>
+          <div class="eval-question" data-correct="b"><p class="eval-q-number">Pregunta 7 de 8</p><p class="mc-question">¿Por qué IEMOCAP se considera semi-natural?</p><div class="mc-options"><button class="mc-btn" data-option="a">Por conversaciones telefónicas reales</button><button class="mc-btn" data-option="b">Por usar escenas improvisadas entre actores, no lecturas guionizadas</button><button class="mc-btn" data-option="c">Por grabaciones en ambientes ruidosos</button></div><div class="mc-feedback"></div></div>
+          <div class="eval-question" data-correct="c"><p class="eval-q-number">Pregunta 8 de 8</p><p class="mc-question">Según tendencias actuales, ¿qué afirmación es correcta?</p><div class="mc-options"><button class="mc-btn" data-option="a">Los MFCCs siguen siendo superiores a cualquier representación visual</button><button class="mc-btn" data-option="b">El deep learning ha resuelto completamente los desafíos del SER</button><button class="mc-btn" data-option="c">Los Transformers (Wav2Vec 2.0) demuestran adaptabilidad superior y estado del arte</button></div><div class="mc-feedback"></div></div>
           <div class="eval-result" id="evalResult">
-            <div class="eval-result-inner">
-              <span class="eval-result-icon" id="evalResultIcon"></span>
-              <h3 id="evalResultTitle"></h3>
-              <p id="evalResultText"></p>
-              <button class="btn btn-primary" id="evalRetry" style="display:none;">Reintentar</button>
-            </div>
+            <span class="eval-result-icon" id="evalResultIcon"></span>
+            <h3 id="evalResultTitle"></h3>
+            <p id="evalResultText"></p>
+            <button class="btn btn-primary" id="evalRetry" style="display:none">Reintentar</button>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ——— PANTALLA 11: CONCLUSIÓN ——— -->
+    <!-- ========== PANTALLA 11: CONCLUSIÓN ========== -->
     <section class="screen" id="screen-10" data-screen="10">
-      <div class="screen-inner">
-        <div class="screen-header">
-          <span class="screen-tag">Cierre</span>
-          <h2>Conclusión</h2>
-        </div>
-        <div class="conclusion-content">
-          <div class="conclusion-block">
-            <span class="conclusion-num">01</span>
-            <h3>Sobre el proceso de desarrollo del ODC</h3>
-            <p>El diseño de este Objeto Digital de Conocimiento permitió sintetizar y estructurar la evidencia científica más reciente sobre SER con CNNs en un formato interactivo y accesible. El proceso de selección de 30 artículos mediante la metodología PRISMA, el análisis de sus hallazgos y la traducción de ese conocimiento en módulos didácticos con actividades de retroalimentación demostró que los recursos educativos digitales pueden integrar rigor académico con experiencias de aprendizaje significativas.</p>
-          </div>
-          <div class="conclusion-block">
-            <span class="conclusion-num">02</span>
-            <h3>Sobre la especialización y su aporte profesional</h3>
-            <p>La Especialización en Inteligencia Artificial de la Universidad de Cundinamarca proporcionó las competencias necesarias para abordar un problema complejo en la intersección del procesamiento de señales, el deep learning y la interacción humano-computador. La capacidad de evaluar críticamente arquitecturas de redes neuronales, seleccionar estrategias de fusión de características y comprender sus aplicaciones prácticas constituye un aporte profesional directamente transferible al diseño de sistemas inteligentes en entornos reales.</p>
-          </div>
-          <div class="conclusion-block">
-            <span class="conclusion-num">03</span>
-            <h3>Sobre el reconocimiento emocional por voz</h3>
-            <p>Las arquitecturas híbridas basadas en CNN (CNN-LSTM, CNN-BiLSTM con atención, CNN-Transformer) han demostrado ser altamente efectivas para el reconocimiento de emociones en el habla, con precisiones que superan el 90% en datasets de referencia. La combinación de características acústicas artesanales con representaciones aprendidas automáticamente, junto con estrategias de fusión y ensemble, representa el enfoque más robusto actualmente disponible para abordar la complejidad inherente a la expresión emocional vocal.</p>
-          </div>
-          <div class="conclusion-block">
-            <span class="conclusion-num">04</span>
-            <h3>Sobre interfaces adaptativas y HCI</h3>
-            <p>La integración de sistemas SER en interfaces adaptativas tiene el potencial de transformar la interacción humano-computador, pasando de experiencias estáticas y genéricas a interacciones personalizadas que responden al estado emocional del usuario. Sin embargo, persisten desafíos como la generalización entre idiomas y culturas, el rendimiento en condiciones ruidosas del mundo real y las consideraciones éticas sobre la privacidad emocional que deben abordarse para una adopción responsable de estas tecnologías.</p>
-          </div>
-          <div class="conclusion-next-steps">
-            <h3>Siguientes pasos</h3>
-            <div class="next-steps-grid">
-              <div class="next-step-item">
-                <span class="next-step-icon">🔬</span>
-                <p>Explorar implementaciones prácticas de SER en aplicaciones reales usando frameworks como TensorFlow o PyTorch</p>
-              </div>
-              <div class="next-step-item">
-                <span class="next-step-icon">🌎</span>
-                <p>Investigar el reconocimiento emocional en español y otros idiomas sub-representados</p>
-              </div>
-              <div class="next-step-item">
-                <span class="next-step-icon">⚖️</span>
-                <p>Considerar los aspectos éticos de la detección emocional: consentimiento, privacidad y sesgo algorítmico</p>
-              </div>
-              <div class="next-step-item">
-                <span class="next-step-icon">🧪</span>
-                <p>Experimentar con modelos multimodales que integren voz, texto y expresión facial</p>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div class="text-screen">
+        <span class="text-screen-tag">Cierre</span>
+        <h2 class="text-screen-title">Conclusión</h2>
+        <div class="conclusion-block"><span class="conclusion-num">01</span><div><h3>Sobre el proceso de desarrollo del ODC</h3><p>El diseño de este ODC permitió sintetizar y estructurar la evidencia científica más reciente sobre SER con CNNs en un formato interactivo y accesible, integrando rigor académico con experiencias de aprendizaje significativas.</p></div></div>
+        <div class="conclusion-block"><span class="conclusion-num">02</span><div><h3>Sobre la especialización</h3><p>La Especialización en IA de la Universidad de Cundinamarca proporcionó las competencias para abordar la intersección del procesamiento de señales, el deep learning y la HCI, con aplicabilidad directa al diseño de sistemas inteligentes reales.</p></div></div>
+        <div class="conclusion-block"><span class="conclusion-num">03</span><div><h3>Sobre el reconocimiento emocional por voz</h3><p>Las arquitecturas híbridas (CNN-LSTM, CNN-BiLSTM con atención, CNN-Transformer) han demostrado precisiones superiores al 90% en datasets de referencia. La combinación de características artesanales con representaciones aprendidas representa el enfoque más robusto disponible.</p></div></div>
+        <div class="conclusion-block"><span class="conclusion-num">04</span><div><h3>Sobre interfaces adaptativas y HCI</h3><p>La integración de SER en interfaces adaptativas puede transformar la HCI, pero persisten desafíos: generalización entre idiomas, rendimiento en condiciones ruidosas y consideraciones éticas sobre privacidad emocional.</p></div></div>
+        <div style="margin-top:20px"><h3 style="font-size:15px;color:var(--dark);margin-bottom:14px">Siguientes pasos</h3>
+        <div class="next-steps-grid">
+          <div class="next-step-item"><span>🔬</span><p>Implementaciones prácticas de SER con TensorFlow o PyTorch</p></div>
+          <div class="next-step-item"><span>🌎</span><p>Reconocimiento emocional en español y otros idiomas sub-representados</p></div>
+          <div class="next-step-item"><span>⚖️</span><p>Aspectos éticos: consentimiento, privacidad y sesgo algorítmico</p></div>
+          <div class="next-step-item"><span>🧪</span><p>Modelos multimodales que integren voz, texto y expresión facial</p></div>
+        </div></div>
       </div>
     </section>
 
-    <!-- ——— PANTALLA 12: REFERENCIAS ——— -->
+    <!-- ========== PANTALLA 12: REFERENCIAS ========== -->
     <section class="screen" id="screen-11" data-screen="11">
-      <div class="screen-inner">
-        <div class="screen-header">
-          <span class="screen-tag">Bibliografía</span>
-          <h2>Referencias</h2>
-          <p class="screen-subtitle">Formato APA 7 — 22 fuentes</p>
-        </div>
-        <div class="references-list" id="referencesList">
-          <div class="ref-item">Aggarwal, M., Pradhan, A., Shukla, A., Shukla, N., Gupta, A., &amp; Sharma, A. (2026). Improving Speech Emotion Recognition with Advanced Deep Learning Approaches. <em>Lecture Notes in Networks and Systems</em>. <a href="https://doi.org/10.1007/978-981-97-8460-8_3" target="_blank" rel="noopener">https://doi.org/10.1007/978-981-97-8460-8_3</a></div>
-          <div class="ref-item">Bhanbhro, J., Memon, A. A., Lal, B., Talpur, S., &amp; Memon, M. (2025). Speech Emotion Recognition: Comparative Analysis of CNN-LSTM and CNN-BiLSTM with Attention Models. <em>IEEE Access</em>, 13, 1–15. <a href="https://doi.org/10.1109/ACCESS.2025.3545129" target="_blank" rel="noopener">https://doi.org/10.1109/ACCESS.2025.3545129</a></div>
-          <div class="ref-item">Boitel, E., Mohasseb, A., &amp; Haig, E. (2025). MIST: Multimodal emotion recognition using DeBERTa for text, Semi-CNN for speech, and ResNet-50 for image and movement data. <em>Array</em>, 25, 100380. <a href="https://doi.org/10.1016/j.array.2025.100380" target="_blank" rel="noopener">https://doi.org/10.1016/j.array.2025.100380</a></div>
-          <div class="ref-item">Chowdhury, J. H., Ramanna, S., &amp; Kotecha, K. (2025). Speech emotion recognition with light weight deep neural ensemble model. <em>Scientific Reports</em>, 15, 4367. <a href="https://doi.org/10.1038/s41598-025-88737-z" target="_blank" rel="noopener">https://doi.org/10.1038/s41598-025-88737-z</a></div>
-          <div class="ref-item">Ekman, P. (1992). An argument for basic emotions. <em>Cognition &amp; Emotion</em>, 6(3-4), 169–200. <a href="https://doi.org/10.1080/02699939208411068" target="_blank" rel="noopener">https://doi.org/10.1080/02699939208411068</a></div>
-          <div class="ref-item">Hu, Q., Peng, Y., &amp; Zheng, Z. (2025). A deep learning framework for gender sensitive speech emotion recognition based on Fisher criterion and bat optimization. <em>Artificial Intelligence Review</em>, 58, 152. <a href="https://doi.org/10.1007/s10462-025-11148-z" target="_blank" rel="noopener">https://doi.org/10.1007/s10462-025-11148-z</a></div>
-          <div class="ref-item">Kahhoul, Z. S., Terki, N., Tiar, M. L., Benaissa, I., &amp; Boutiba, S. (2025). Ensemble Learning for Improved Speech Emotion Classification Using the Geneva Wheel. <em>Algorithms</em>, 18(3), 127. <a href="https://doi.org/10.3390/a18030127" target="_blank" rel="noopener">https://doi.org/10.3390/a18030127</a></div>
-          <div class="ref-item">Khaparde, S., &amp; Verma, R. (2026). A Holistic Review of Deep Learning Methods in Speech Emotion Recognition. <em>Lecture Notes in Networks and Systems</em>. <a href="https://doi.org/10.1007/978-981-97-8460-8_6" target="_blank" rel="noopener">https://doi.org/10.1007/978-981-97-8460-8_6</a></div>
-          <div class="ref-item">Kurniadi, D., Fernando, E., Al Zayyan, S., &amp; Mulyani, A. (2025). Combined Acoustic Features with CNN-BiLSTM-Transformer for Female Speech Emotion Recognition. <em>IEEE Access</em>, 13, 1–15. <a href="https://doi.org/10.1109/ACCESS.2025.3551797" target="_blank" rel="noopener">https://doi.org/10.1109/ACCESS.2025.3551797</a></div>
-          <div class="ref-item">Livingstone, S. R., &amp; Russo, F. A. (2018). The Ryerson Audio-Visual Database of Emotional Speech and Song (RAVDESS). <em>PLoS ONE</em>, 13(5), e0196391. <a href="https://doi.org/10.1371/journal.pone.0196391" target="_blank" rel="noopener">https://doi.org/10.1371/journal.pone.0196391</a></div>
-          <div class="ref-item">Nugroho, K., Al Amin, I. H., Noviasari, N. A., &amp; Setiadi, D. R. I. M. (2025). Prosodic Spatio-Temporal Feature Fusion with Multitaper Mel and CQT Spectrograms for SER. <em>IEEE Access</em>, 13, 1–15. <a href="https://doi.org/10.1109/ACCESS.2025.3549478" target="_blank" rel="noopener">https://doi.org/10.1109/ACCESS.2025.3549478</a></div>
-          <div class="ref-item">Ortega-Beltrán, E., Cabacas-Maso, J., Benito-Altamirano, I., &amp; Ye, J. (2026). Overlooked romance languages: In-the-wild speech emotion recognition in Spanish and Italian. <em>Computers and Electrical Engineering</em>, 123, 110221. <a href="https://doi.org/10.1016/j.compeleceng.2025.110221" target="_blank" rel="noopener">https://doi.org/10.1016/j.compeleceng.2025.110221</a></div>
+      <div class="text-screen">
+        <span class="text-screen-tag">Bibliografía</span>
+        <h2 class="text-screen-title">Referencias</h2>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:18px">Formato APA 7 · 24 fuentes</p>
+        <div class="ref-list">
+          <div class="ref-item">Aggarwal, M. et al. (2026). Improving Speech Emotion Recognition with Advanced Deep Learning Approaches. <em>Lecture Notes in Networks and Systems</em>. <a href="https://doi.org/10.1007/978-981-97-8460-8_3" target="_blank">https://doi.org/10.1007/978-981-97-8460-8_3</a></div>
+          <div class="ref-item">Bhanbhro, J. et al. (2025). Speech Emotion Recognition: Comparative Analysis of CNN-LSTM and CNN-BiLSTM with Attention Models. <em>IEEE Access</em>, 13. <a href="https://doi.org/10.1109/ACCESS.2025.3545129" target="_blank">https://doi.org/10.1109/ACCESS.2025.3545129</a></div>
+          <div class="ref-item">Boitel, E. et al. (2025). MIST: Multimodal emotion recognition. <em>Array</em>, 25, 100380. <a href="https://doi.org/10.1016/j.array.2025.100380" target="_blank">https://doi.org/10.1016/j.array.2025.100380</a></div>
+          <div class="ref-item">Burkhardt, F. et al. (2005). A database of German emotional speech. <em>Interspeech 2005</em>. <a href="https://doi.org/10.21437/Interspeech.2005-446" target="_blank">https://doi.org/10.21437/Interspeech.2005-446</a></div>
+          <div class="ref-item">Busso, C. et al. (2008). IEMOCAP: Interactive emotional dyadic motion capture database. <em>Language Resources and Evaluation</em>, 42. <a href="https://doi.org/10.1007/s10579-008-9076-6" target="_blank">https://doi.org/10.1007/s10579-008-9076-6</a></div>
+          <div class="ref-item">Cao, H. et al. (2014). CREMA-D: Crowd-sourced Emotional Multimodal Actors Dataset. <em>IEEE TAFFC</em>, 5(4). <a href="https://doi.org/10.1109/TAFFC.2014.2336244" target="_blank">https://doi.org/10.1109/TAFFC.2014.2336244</a></div>
+          <div class="ref-item">Chowdhury, J. H. et al. (2025). Speech emotion recognition with light weight deep neural ensemble. <em>Scientific Reports</em>, 15, 4367. <a href="https://doi.org/10.1038/s41598-025-88737-z" target="_blank">https://doi.org/10.1038/s41598-025-88737-z</a></div>
+          <div class="ref-item">Ekman, P. (1992). An argument for basic emotions. <em>Cognition &amp; Emotion</em>, 6(3-4). <a href="https://doi.org/10.1080/02699939208411068" target="_blank">https://doi.org/10.1080/02699939208411068</a></div>
+          <div class="ref-item">Gaikwad, R. et al. (2025). Face2Feel: Emotion-Aware Adaptive User Interface. <em>arXiv</em>:2510.00489. <a href="https://arxiv.org/abs/2510.00489" target="_blank">https://arxiv.org/abs/2510.00489</a></div>
+          <div class="ref-item">Hu, Q. et al. (2025). Deep learning for gender sensitive speech emotion recognition. <em>AI Review</em>, 58, 152. <a href="https://doi.org/10.1007/s10462-025-11148-z" target="_blank">https://doi.org/10.1007/s10462-025-11148-z</a></div>
+          <div class="ref-item">Kahhoul, Z. S. et al. (2025). Ensemble Learning for Improved Speech Emotion Classification. <em>Algorithms</em>, 18(3), 127. <a href="https://doi.org/10.3390/a18030127" target="_blank">https://doi.org/10.3390/a18030127</a></div>
+          <div class="ref-item">Khaparde, S. &amp; Verma, R. (2026). A Holistic Review of Deep Learning Methods in SER. <em>Lecture Notes in Networks and Systems</em>. <a href="https://doi.org/10.1007/978-981-97-8460-8_6" target="_blank">https://doi.org/10.1007/978-981-97-8460-8_6</a></div>
+          <div class="ref-item">Kurniadi, D. et al. (2025). Combined Acoustic Features with CNN-BiLSTM-Transformer. <em>IEEE Access</em>, 13. <a href="https://doi.org/10.1109/ACCESS.2025.3551797" target="_blank">https://doi.org/10.1109/ACCESS.2025.3551797</a></div>
+          <div class="ref-item">Livingstone, S. R. &amp; Russo, F. A. (2018). The RAVDESS database. <em>PLoS ONE</em>, 13(5). <a href="https://doi.org/10.1371/journal.pone.0196391" target="_blank">https://doi.org/10.1371/journal.pone.0196391</a></div>
+          <div class="ref-item">Mehrabian, A. &amp; Wiener, M. (1967). Decoding of inconsistent communications. <em>J. Personality and Social Psychology</em>, 6(1). <a href="https://doi.org/10.1037/h0024532" target="_blank">https://doi.org/10.1037/h0024532</a></div>
+          <div class="ref-item">Nugroho, K. et al. (2025). Prosodic Spatio-Temporal Feature Fusion for SER. <em>IEEE Access</em>, 13. <a href="https://doi.org/10.1109/ACCESS.2025.3549478" target="_blank">https://doi.org/10.1109/ACCESS.2025.3549478</a></div>
+          <div class="ref-item">Ortega-Beltrán, E. et al. (2026). In-the-wild SER in Spanish and Italian. <em>Computers and Electrical Engineering</em>, 123. <a href="https://doi.org/10.1016/j.compeleceng.2025.110221" target="_blank">https://doi.org/10.1016/j.compeleceng.2025.110221</a></div>
           <div class="ref-item">Picard, R. W. (1997). <em>Affective Computing</em>. MIT Press.</div>
-          <div class="ref-item">Raghu, K., Sadanandam, M., &amp; Hanumanthu, B. (2026). Hybrid acoustic-deep features with auto encoders for speech emotion recognition. <em>Multimedia Tools and Applications</em>. <a href="https://doi.org/10.1007/s11042-025-21064-0" target="_blank" rel="noopener">https://doi.org/10.1007/s11042-025-21064-0</a></div>
-          <div class="ref-item">Schuller, B. W. (2018). Speech emotion recognition: Two decades in a nutshell, benchmarks, and ongoing trends. <em>Communications of the ACM</em>, 61(5), 90–99. <a href="https://doi.org/10.1145/3129340" target="_blank" rel="noopener">https://doi.org/10.1145/3129340</a></div>
-          <div class="ref-item">Shome, N. (2025). An efficient parallel network for speech emotion recognition for noisy data condition. <em>Journal of the Audio Engineering Society</em>. <a href="https://doi.org/10.17743/jaes.2022.0100" target="_blank" rel="noopener">https://doi.org/10.17743/jaes.2022.0100</a></div>
-          <div class="ref-item">Wang, S., Feng, L., &amp; Zhang, L. (2025). T_SRNET: A multimodal model based on convolutional neural network for emotional recognition of speech. <em>Applied Acoustics</em>, 233, 110548. <a href="https://doi.org/10.1016/j.apacoust.2025.110548" target="_blank" rel="noopener">https://doi.org/10.1016/j.apacoust.2025.110548</a></div>
-          <div class="ref-item">Wei, Z., Ge, C., Zhu, L., &amp; Ye, J. (2025). Speech Emotion Recognition via Parallel Dual-Branch Fusion Model. <em>International Journal of Computational Intelligence Systems</em>, 18, 54. <a href="https://doi.org/10.1007/s44196-025-00798-2" target="_blank" rel="noopener">https://doi.org/10.1007/s44196-025-00798-2</a></div>
-          <div class="ref-item">Zeng, C., Li, J., &amp; Habibi, A. (2025). Speech emotion recognition based on stacked autoencoders optimized by PSO-GFRO. <em>Frontiers in Computer Science</em>, 7, 1523755. <a href="https://doi.org/10.3389/fcomp.2025.1523755" target="_blank" rel="noopener">https://doi.org/10.3389/fcomp.2025.1523755</a></div>
-          <div class="ref-item">Busso, C., Bulut, M., Lee, C. C., Kazemzadeh, A., Mower, E., Kim, S., Chang, J. N., Lee, S., &amp; Narayanan, S. S. (2008). IEMOCAP: Interactive emotional dyadic motion capture database. <em>Language Resources and Evaluation</em>, 42, 335–359. <a href="https://doi.org/10.1007/s10579-008-9076-6" target="_blank" rel="noopener">https://doi.org/10.1007/s10579-008-9076-6</a></div>
-          <div class="ref-item">Burkhardt, F., Paeschke, A., Rolfes, M., Sendlmeier, W., &amp; Weiss, B. (2005). A database of German emotional speech. <em>Proceedings of Interspeech 2005</em>, 1517–1520. <a href="https://doi.org/10.21437/Interspeech.2005-446" target="_blank" rel="noopener">https://doi.org/10.21437/Interspeech.2005-446</a></div>
-          <div class="ref-item">Cao, H., Cooper, D. G., Keutmann, M. K., Gur, R. C., Nenkova, A., &amp; Verma, R. (2014). CREMA-D: Crowd-sourced Emotional Multimodal Actors Dataset. <em>IEEE Transactions on Affective Computing</em>, 5(4), 377–390. <a href="https://doi.org/10.1109/TAFFC.2014.2336244" target="_blank" rel="noopener">https://doi.org/10.1109/TAFFC.2014.2336244</a></div>
+          <div class="ref-item">Raghu, K. et al. (2026). Hybrid acoustic-deep features with auto encoders for SER. <em>Multimedia Tools and Applications</em>. <a href="https://doi.org/10.1007/s11042-025-21064-0" target="_blank">https://doi.org/10.1007/s11042-025-21064-0</a></div>
+          <div class="ref-item">Schuller, B. W. (2018). Speech emotion recognition: Two decades in a nutshell. <em>CACM</em>, 61(5). <a href="https://doi.org/10.1145/3129340" target="_blank">https://doi.org/10.1145/3129340</a></div>
+          <div class="ref-item">Shome, N. (2025). Efficient parallel network for SER in noisy conditions. <em>JAES</em>. <a href="https://doi.org/10.17743/jaes.2022.0100" target="_blank">https://doi.org/10.17743/jaes.2022.0100</a></div>
+          <div class="ref-item">Wang, S. et al. (2025). T_SRNET: Multimodal CNN for emotional speech recognition. <em>Applied Acoustics</em>, 233. <a href="https://doi.org/10.1016/j.apacoust.2025.110548" target="_blank">https://doi.org/10.1016/j.apacoust.2025.110548</a></div>
+          <div class="ref-item">Wei, Z. et al. (2025). Speech Emotion Recognition via Parallel Dual-Branch Fusion. <em>IJCIS</em>, 18, 54. <a href="https://doi.org/10.1007/s44196-025-00798-2" target="_blank">https://doi.org/10.1007/s44196-025-00798-2</a></div>
+          <div class="ref-item">Zeng, C. et al. (2025). SER based on stacked autoencoders optimized by PSO-GFRO. <em>Frontiers in Computer Science</em>, 7. <a href="https://doi.org/10.3389/fcomp.2025.1523755" target="_blank">https://doi.org/10.3389/fcomp.2025.1523755</a></div>
         </div>
       </div>
     </section>
 
-    <!-- ——— PANTALLA 13: CRÉDITOS ——— -->
+    <!-- ========== PANTALLA 13: CRÉDITOS ========== -->
     <section class="screen" id="screen-12" data-screen="12">
-      <div class="screen-inner">
-        <div class="screen-header">
-          <span class="screen-tag">Créditos</span>
-          <h2>Créditos y Licencia</h2>
+      <div class="text-screen">
+        <span class="text-screen-tag">Créditos</span>
+        <h2 class="text-screen-title">Créditos y Metadatos</h2>
+
+        <div class="credits-layout">
+          <div class="credits-box" style="grid-column:1/-1">
+            <h3>Metadatos del ODC</h3>
+            <table class="metadata-table">
+              <tr><td>Área de conocimiento</td><td>Inteligencia Artificial · Interacción Humano-Computador</td></tr>
+              <tr><td>Nombre del material</td><td>Reconocimiento Emocional por Voz en Interfaces Adaptativas</td></tr>
+              <tr><td>Autores</td><td>Yow Nicolás Guacaneme Molano · Miguel Angel Pardo López</td></tr>
+              <tr><td>Diseño y desarrollo</td><td>Yow Nicolás Guacaneme Molano</td></tr>
+              <tr><td>Tutoría</td><td>Jhondert Alberto Jaimes Rodriguez</td></tr>
+              <tr><td>Imágenes</td><td>Pendiente de completar</td></tr>
+              <tr><td>Sonidos y voces</td><td>Pendiente de completar</td></tr>
+              <tr><td>Fecha de creación</td><td>2026</td></tr>
+              <tr><td>Nivel educativo</td><td>Alto (Posgrado / Especialización)</td></tr>
+              <tr><td>Institución</td><td>Universidad de Cundinamarca</td></tr>
+            </table>
+          </div>
+          <div class="credits-box">
+            <h3>Programa académico</h3>
+            <p>Especialización en Inteligencia Artificial<br>Instituto de Posgrados<br>Universidad de Cundinamarca · 2026</p>
+          </div>
+          <div class="credits-box">
+            <h3>Número de pantalla</h3>
+            <p style="font-family:var(--font-head);font-size:32px;color:var(--red)">13</p>
+            <p style="font-size:12px;color:var(--muted)">Pantalla final del ODC</p>
+          </div>
         </div>
-        <div class="credits-content">
-          <div class="credits-block">
-            <h3>Autoría y Contenido</h3>
-            <p>Yow Nicolás Guacaneme Molano</p>
-            <p>Miguel Angel Pardo López</p>
-          </div>
-          <div class="credits-block">
-            <h3>Tutoría</h3>
-            <p>Jhondert Alberto Jaimes Rodriguez</p>
-          </div>
-          <div class="credits-block">
-            <h3>Diseño y Desarrollo</h3>
-            <p>Yow Nicolás Guacaneme Molano</p>
-          </div>
-          <div class="credits-block">
-            <h3>Programa</h3>
-            <p>Especialización en Inteligencia Artificial</p>
-            <p>Instituto de Posgrados · Universidad de Cundinamarca</p>
-          </div>
-          <div class="credits-license">
-            <h3>Licencia</h3>
-            <p>Este ODC se distribuye bajo licencia <strong>Creative Commons CC BY 4.0</strong>.</p>
-            <p>Usted es libre de compartir y adaptar este material, siempre que se otorgue la atribución correspondiente.</p>
-          </div>
+
+        <div class="cc-block">
+          <img src="https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png" alt="CC BY-NC-SA 4.0">
+          <p>Los RED producidos bajo la supervisión de la <strong>Oficina de Educación Virtual y a Distancia</strong> de la Universidad de Cundinamarca cuentan con licencia <strong>Creative Commons CC BY-NC-SA 4.0</strong>. Usted es libre de compartir y adaptar este material con atribución y bajo la misma licencia.</p>
         </div>
+
+        <div class="footer-bar">Oficina de Educación Virtual y a Distancia · Universidad de Cundinamarca · 2026</div>
       </div>
     </section>
 
-  </main>
+  </div><!-- /odc-wrap -->
 
-  <!-- ============ MODAL DE AYUDA ============ -->
+  <!-- MODAL AYUDA -->
   <div class="modal-overlay" id="modalAyuda">
     <div class="modal">
-      <button class="modal-close" id="modalClose" aria-label="Cerrar">✕</button>
+      <button class="modal-close" id="modalClose">✕</button>
       <h3>¿Cómo navegar este ODC?</h3>
-      <div class="modal-body">
-        <p><strong>Flechas ← →</strong> — Avanzar o retroceder entre pantallas.</p>
-        <p><strong>Menú</strong> — Ir a cualquier sección directamente.</p>
-        <p><strong>Barra de progreso</strong> — Muestra tu avance en la parte superior.</p>
-        <p><strong>Actividades</strong> — Cada módulo tiene una actividad con retroalimentación.</p>
-        <p><strong>+info</strong> — Botones que abren ventanas con información adicional.</p>
-        <p><strong>Evaluación</strong> — Necesitas 80% de acierto para aprobar.</p>
-      </div>
+      <p><strong>Anterior / Siguiente</strong> — navega entre pantallas.</p>
+      <p><strong>Menú</strong> — ve a cualquier sección directamente.</p>
+      <p><strong>Barra roja (arriba)</strong> — muestra tu avance global.</p>
+      <p><strong>Actividades</strong> — cada módulo tiene una actividad interactiva con retroalimentación.</p>
+      <p><strong>+ botones</strong> — abren información adicional.</p>
+      <p><strong>Evaluación Final</strong> — necesitas 80% (6 de 8) para aprobar el REA.</p>
     </div>
   </div>
 
-  <script src="js/navigation.js"></script>
-  <script src="js/interactions.js"></script>
-  <script src="js/quiz.js"></script>
-  <script src="js/app.js"></script>
+  <script>
+  // ===== NAVIGATION =====
+  const TOTAL = 13;
+  let current = 0;
+
+  function showScreen(n) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-' + n).classList.add('active');
+    current = n;
+    document.getElementById('progressFill').style.width = ((n / (TOTAL - 1)) * 100) + '%';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  document.getElementById('btnNext').addEventListener('click', () => { if (current < TOTAL - 1) showScreen(current + 1); });
+  document.getElementById('btnPrev').addEventListener('click', () => { if (current > 0) showScreen(current - 1); });
+  document.getElementById('btnIniciar')?.addEventListener('click', () => showScreen(1));
+  document.getElementById('btnGoMenu')?.addEventListener('click', () => showScreen(2));
+  document.getElementById('btnMenu').addEventListener('click', () => showScreen(2));
+
+  document.querySelectorAll('[data-goto]').forEach(btn => {
+    btn.addEventListener('click', () => showScreen(parseInt(btn.dataset.goto)));
+  });
+
+  // ===== MODAL =====
+  document.getElementById('btnAyuda')?.addEventListener('click', () => document.getElementById('modalAyuda').classList.add('open'));
+  document.getElementById('modalClose')?.addEventListener('click', () => document.getElementById('modalAyuda').classList.remove('open'));
+  document.getElementById('modalAyuda')?.addEventListener('click', e => { if (e.target === e.currentTarget) e.currentTarget.classList.remove('open'); });
+
+  // ===== POPUPS =====
+  document.querySelectorAll('.popup-trigger').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const panel = document.getElementById(btn.dataset.popup);
+      if (panel) panel.classList.toggle('open');
+    });
+  });
+
+  // ===== V/F ACTIVITY =====
+  document.querySelectorAll('.vf-item').forEach(item => {
+    const correct = item.dataset.correct;
+    item.querySelectorAll('.vf-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (item.querySelector('.vf-btn.correct') || item.querySelector('.vf-btn.incorrect')) return;
+        const answer = btn.dataset.answer;
+        const fb = item.querySelector('.vf-feedback');
+        if (answer === correct) {
+          btn.classList.add('correct');
+          fb.textContent = '✓ Correcto';
+          fb.style.color = '#065f46';
+        } else {
+          btn.classList.add('incorrect');
+          fb.textContent = '✗ Incorrecto. La respuesta es ' + (correct === 'true' ? 'Verdadero' : 'Falso');
+          fb.style.color = '#991b1b';
+        }
+      });
+    });
+  });
+
+  // ===== MC ACTIVITY =====
+  document.querySelectorAll('.mc-item').forEach(item => {
+    const correct = item.dataset.correct;
+    if (!correct) return;
+    item.querySelectorAll('.mc-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (item.querySelector('.mc-btn.correct') || item.querySelector('.mc-btn.incorrect')) return;
+        const fb = item.querySelector('.mc-feedback');
+        if (btn.dataset.option === correct) {
+          btn.classList.add('correct');
+          fb.textContent = '✓ Correcto';
+          fb.style.color = '#065f46';
+        } else {
+          btn.classList.add('incorrect');
+          fb.textContent = '✗ Incorrecto';
+          fb.style.color = '#991b1b';
+          item.querySelector('[data-option="' + correct + '"]')?.classList.add('correct');
+        }
+      });
+    });
+  });
+
+  // Caso m5 standalone
+  const caseFb = document.getElementById('case-feedback-m5');
+  document.querySelectorAll('#case-m5-opts .mc-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (document.querySelector('#case-m5-opts .mc-btn.correct')) return;
+      if (btn.dataset.option === 'b') {
+        btn.classList.add('correct');
+        caseFb.textContent = '✓ Correcto. El módulo SER de audio es el más directo, no invasivo y disponible en cualquier dispositivo.';
+        caseFb.style.color = '#065f46';
+      } else {
+        btn.classList.add('incorrect');
+        caseFb.textContent = '✗ El módulo SER de audio/micrófono es la opción más accesible y directa.';
+        caseFb.style.color = '#991b1b';
+        document.querySelector('#case-m5-opts [data-option="b"]').classList.add('correct');
+      }
+    });
+  });
+
+  // ===== MATCH ACTIVITY =====
+  let selectedTerm = null;
+  let matchedPairs = 0;
+  document.querySelectorAll('.match-col:first-child .match-item').forEach(term => {
+    term.addEventListener('click', () => {
+      document.querySelectorAll('.match-col:first-child .match-item').forEach(t => t.classList.remove('selected'));
+      selectedTerm = term;
+      term.classList.add('selected');
+    });
+  });
+  document.querySelectorAll('.match-col:last-child .match-item').forEach(def => {
+    def.addEventListener('click', () => {
+      if (!selectedTerm) return;
+      const fb = document.getElementById('match-feedback-m2');
+      if (selectedTerm.dataset.match === def.dataset.match) {
+        selectedTerm.classList.remove('selected');
+        selectedTerm.classList.add('matched');
+        def.classList.add('matched');
+        matchedPairs++;
+        selectedTerm = null;
+        if (matchedPairs === 4) { fb.textContent = '✓ ¡Excelente! Todas las parejas son correctas.'; fb.style.color = '#065f46'; }
+      } else {
+        fb.textContent = '✗ Esa combinación no es correcta. Intenta de nuevo.';
+        fb.style.color = '#991b1b';
+        selectedTerm.classList.remove('selected');
+        selectedTerm = null;
+      }
+    });
+  });
+
+  // ===== SORT ACTIVITY =====
+  const sortList = document.getElementById('sort-m3');
+  let dragSrc = null;
+  if (sortList) {
+    sortList.querySelectorAll('.sort-item').forEach(item => {
+      item.addEventListener('dragstart', e => { dragSrc = item; item.classList.add('dragging'); });
+      item.addEventListener('dragend', () => item.classList.remove('dragging'));
+      item.addEventListener('dragover', e => { e.preventDefault(); const rect = item.getBoundingClientRect(); const mid = rect.top + rect.height / 2; if (e.clientY < mid) sortList.insertBefore(dragSrc, item); else sortList.insertBefore(dragSrc, item.nextSibling); });
+    });
+    document.getElementById('checkSort-m3')?.addEventListener('click', () => {
+      const items = [...sortList.querySelectorAll('.sort-item')];
+      const fb = document.getElementById('sort-feedback-m3');
+      const isCorrect = items.every((item, i) => parseInt(item.dataset.order) === i + 1);
+      if (isCorrect) { items.forEach(i => i.classList.add('correct')); fb.textContent = '✓ ¡Orden correcto!'; fb.style.color = '#065f46'; }
+      else { fb.textContent = '✗ El orden no es correcto. Intenta de nuevo.'; fb.style.color = '#991b1b'; }
+    });
+  }
+
+  // ===== EVALUACIÓN FINAL =====
+  let evalAnswered = 0;
+  let evalCorrect = 0;
+  const evalQuestions = document.querySelectorAll('.eval-question');
+  const evalResult = document.getElementById('evalResult');
+
+  evalQuestions.forEach(q => {
+    const correct = q.dataset.correct;
+    q.querySelectorAll('.mc-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (q.classList.contains('answered')) return;
+        q.classList.add('answered');
+        const fb = q.querySelector('.mc-feedback');
+        if (btn.dataset.option === correct) {
+          btn.classList.add('correct');
+          evalCorrect++;
+          fb.textContent = '✓ Correcto';
+          fb.style.color = '#065f46';
+        } else {
+          btn.classList.add('incorrect');
+          fb.textContent = '✗ Incorrecto';
+          fb.style.color = '#991b1b';
+          q.querySelector('[data-option="' + correct + '"]')?.classList.add('correct');
+        }
+        evalAnswered++;
+        document.getElementById('evalScore').textContent = evalCorrect + ' / 8';
+        document.getElementById('evalBarFill').style.width = (evalCorrect / 8 * 100) + '%';
+        if (evalAnswered === 8) {
+          setTimeout(() => {
+            evalResult.classList.add('visible');
+            const icon = document.getElementById('evalResultIcon');
+            const title = document.getElementById('evalResultTitle');
+            const text = document.getElementById('evalResultText');
+            const retry = document.getElementById('evalRetry');
+            if (evalCorrect >= 6) {
+              icon.textContent = '🎉';
+              title.textContent = '¡Aprobado! ' + evalCorrect + '/8';
+              text.textContent = 'Has alcanzado el REA. Obtuviste ' + Math.round(evalCorrect/8*100) + '% de acierto.';
+            } else {
+              icon.textContent = '📚';
+              title.textContent = 'Necesitas repasar · ' + evalCorrect + '/8';
+              text.textContent = 'Obtuviste ' + Math.round(evalCorrect/8*100) + '%. Necesitas al menos 80% (6/8) para aprobar.';
+              retry.style.display = 'inline-flex';
+            }
+          }, 400);
+        }
+      });
+    });
+  });
+
+  document.getElementById('evalRetry')?.addEventListener('click', () => {
+    evalAnswered = 0; evalCorrect = 0;
+    evalQuestions.forEach(q => {
+      q.classList.remove('answered');
+      q.querySelectorAll('.mc-btn').forEach(b => b.classList.remove('correct','incorrect'));
+      q.querySelector('.mc-feedback').textContent = '';
+    });
+    evalResult.classList.remove('visible');
+    document.getElementById('evalScore').textContent = '0 / 8';
+    document.getElementById('evalBarFill').style.width = '0%';
+  });
+  </script>
 </body>
 </html>
