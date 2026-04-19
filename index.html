@@ -4,985 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ODC — Reconocimiento Emocional por Voz en Interfaces Adaptativas</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <style>
-    /* ===== RESET & BASE ===== */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --red:        #C0202B;
-      --red-light:  #e8353f;
-      --red-pale:   #fdf2f2;
-      --dark:       #1a1a1a;
-      --mid:        #4a4a4a;
-      --muted:      #8a8a8a;
-      --border:     #d8d8d8;
-      --border-l:   #ebebeb;
-      --bg:         #f8f7f5;
-      --white:      #ffffff;
-      --cream:      #f3f1ee;
-      --zone-bg:    #ffffff;
-      --shadow:     0 1px 4px rgba(0,0,0,0.07);
-      --shadow-md:  0 4px 16px rgba(0,0,0,0.10);
-      --r:          6px;
-      --font-head:  'Playfair Display', Georgia, serif;
-      --font-body:  'DM Sans', sans-serif;
-      --font-mono:  'DM Mono', monospace;
-    }
-
-    html, body { height: 100%; }
-
-    body {
-      font-family: var(--font-body);
-      background: var(--bg);
-      color: var(--dark);
-      line-height: 1.6;
-      font-size: 15px;
-    }
-
-    /* ===== PROGRESS BAR ===== */
-    .progress-bar {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      height: 3px;
-      background: var(--border-l);
-      z-index: 1000;
-    }
-    .progress-fill {
-      height: 100%;
-      background: var(--red);
-      transition: width 0.4s ease;
-      width: 0%;
-    }
-
-    /* ===== GLOBAL NAV ===== */
-    .global-nav {
-      position: fixed;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 100px;
-      padding: 6px 10px;
-      box-shadow: var(--shadow-md);
-      z-index: 1000;
-    }
-    .nav-btn {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 14px;
-      border: none;
-      background: transparent;
-      color: var(--mid);
-      border-radius: 100px;
-      cursor: pointer;
-      font-family: var(--font-body);
-      font-size: 13px;
-      font-weight: 500;
-      transition: background 0.15s, color 0.15s;
-    }
-    .nav-btn:hover { background: var(--cream); color: var(--dark); }
-    .nav-btn.nav-menu-btn { background: var(--red); color: #fff; }
-    .nav-btn.nav-menu-btn:hover { background: var(--red-light); }
-
-    /* ===== SCREEN SYSTEM ===== */
-    .odc-wrap {
-      min-height: 100vh;
-      padding: 14px 0 100px;
-    }
-
-    .screen { display: none; }
-    .screen.active { display: block; }
-
-    /* ===== PORTADA ===== */
-    .portada-screen {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      background: var(--white);
-      position: relative;
-      overflow: hidden;
-    }
-    .portada-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 28px 48px 0;
-      border-bottom: 1px solid var(--border-l);
-      padding-bottom: 20px;
-    }
-    .portada-logo-box {
-      width: 180px;
-      height: 70px;
-      border: 2px dashed var(--border);
-      border-radius: var(--r);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--muted);
-      font-size: 11px;
-      text-align: center;
-      padding: 8px;
-    }
-    .portada-udec {
-      text-align: right;
-    }
-    .portada-udec p { font-size: 12px; color: var(--muted); line-height: 1.4; }
-    .portada-udec strong { color: var(--dark); font-size: 13px; }
-
-    .portada-body {
-      flex: 1;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0;
-    }
-    .portada-left {
-      padding: 60px 48px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      border-right: 1px solid var(--border-l);
-    }
-    .portada-badge {
-      display: inline-block;
-      background: var(--red-pale);
-      color: var(--red);
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      padding: 4px 12px;
-      border-radius: 100px;
-      margin-bottom: 24px;
-    }
-    .portada-title {
-      font-family: var(--font-head);
-      font-size: clamp(28px, 4vw, 48px);
-      line-height: 1.15;
-      color: var(--dark);
-      margin-bottom: 32px;
-    }
-    .portada-title em {
-      color: var(--red);
-      font-style: normal;
-    }
-    .portada-meta {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-bottom: 40px;
-    }
-    .portada-meta-row {
-      display: flex;
-      gap: 8px;
-      font-size: 13px;
-    }
-    .portada-meta-row span:first-child {
-      color: var(--muted);
-      min-width: 60px;
-    }
-    .portada-meta-row span:last-child { color: var(--dark); font-weight: 500; }
-
-    .portada-actions { display: flex; gap: 12px; flex-wrap: wrap; }
-
-    .portada-right {
-      background: var(--cream);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 24px;
-      padding: 48px;
-      position: relative;
-    }
-    .portada-image-box {
-      width: 100%;
-      max-width: 380px;
-      aspect-ratio: 16/10;
-      border: 2px dashed var(--border);
-      border-radius: 10px;
-      background: var(--white);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-    .portada-image-box svg { opacity: 0.4; }
-    .portada-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      justify-content: center;
-    }
-    .portada-tag {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 100px;
-      padding: 4px 14px;
-      font-size: 12px;
-      color: var(--mid);
-    }
-
-    .portada-footer {
-      padding: 16px 48px;
-      border-top: 1px solid var(--border-l);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 12px;
-      color: var(--muted);
-    }
-    .portada-footer-red {
-      background: var(--red);
-      color: white;
-      padding: 4px 16px;
-      border-radius: 100px;
-      font-size: 11px;
-      font-weight: 600;
-    }
-
-    /* ===== BUTTONS ===== */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 11px 24px;
-      border-radius: 6px;
-      font-family: var(--font-body);
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      border: none;
-      transition: all 0.15s;
-      text-decoration: none;
-    }
-    .btn-primary { background: var(--red); color: white; }
-    .btn-primary:hover { background: var(--red-light); }
-    .btn-ghost { background: transparent; color: var(--dark); border: 1px solid var(--border); }
-    .btn-ghost:hover { background: var(--cream); }
-    .btn-sm { padding: 7px 16px; font-size: 12px; }
-
-    /* ===== ODC LAYOUT (7 ZONES) ===== */
-    .odc-page {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 16px 24px;
-    }
-
-    /* Top strip: zone1 (big) + zone2+5+6 column */
-    .odc-top {
-      display: grid;
-      grid-template-columns: 1fr 260px;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-
-    /* Zone 1: image of interface */
-    .zone-1 {
-      background: var(--zone-bg);
-      border: 1px solid var(--border);
-      border-radius: var(--r);
-      min-height: 340px;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-    .zone-1-header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 16px;
-      border-bottom: 1px solid var(--border-l);
-      background: var(--cream);
-    }
-    .zone-label {
-      font-size: 10px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--muted);
-    }
-    .zone-num-badge {
-      width: 20px; height: 20px;
-      background: var(--dark);
-      color: white;
-      border-radius: 50%;
-      font-size: 10px;
-      font-weight: 700;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-    }
-    .zone-1-body {
-      flex: 1;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-    }
-    /* Image placeholder inside zone 1 */
-    .img-placeholder {
-      background: var(--cream);
-      border: 2px dashed var(--border);
-      border-radius: var(--r);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      color: var(--muted);
-      font-size: 12px;
-      text-align: center;
-      padding: 16px;
-    }
-    .img-placeholder svg { opacity: 0.35; }
-
-    /* Right sidebar: zone 2 + 5 + 6 */
-    .odc-right-col {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    /* Zone 2: screen number */
-    .zone-2 {
-      background: var(--zone-bg);
-      border: 1px solid var(--border);
-      border-radius: var(--r);
-      padding: 14px 16px;
-    }
-    .zone-2 .screen-number-label {
-      font-size: 10px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--muted);
-      display: block;
-      margin-bottom: 4px;
-    }
-    .zone-2 .screen-number-value {
-      font-family: var(--font-head);
-      font-size: 22px;
-      color: var(--red);
-      font-weight: 700;
-    }
-    .zone-2 .screen-number-title {
-      font-size: 12px;
-      color: var(--mid);
-      margin-top: 4px;
-      line-height: 1.4;
-    }
-
-    /* Zone 5: voices/audio */
-    .zone-5 {
-      background: var(--zone-bg);
-      border: 1px solid var(--border);
-      border-radius: var(--r);
-      flex: 1;
-      overflow: hidden;
-    }
-    .zone-5-header {
-      padding: 10px 16px;
-      border-bottom: 1px solid var(--border-l);
-      background: var(--cream);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .zone-5-body {
-      padding: 14px 16px;
-    }
-    .avatar-placeholder {
-      background: var(--cream);
-      border: 2px dashed var(--border);
-      border-radius: var(--r);
-      padding: 20px 12px;
-      text-align: center;
-      color: var(--muted);
-      font-size: 11px;
-    }
-    .avatar-placeholder svg { display: block; margin: 0 auto 8px; opacity: 0.4; }
-    .avatar-video-wrap video {
-      width: 100%;
-      border-radius: 4px;
-      display: block;
-    }
-
-    /* Zone 6: image description */
-    .zone-6 {
-      background: var(--zone-bg);
-      border: 1px solid var(--border);
-      border-radius: var(--r);
-      overflow: hidden;
-    }
-    .zone-6-header {
-      padding: 8px 14px;
-      border-bottom: 1px solid var(--border-l);
-      background: var(--cream);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .zone-6-body {
-      padding: 12px 14px;
-      font-size: 12px;
-      color: var(--mid);
-      line-height: 1.5;
-    }
-
-    /* Bottom strip: zone3 + zone4 */
-    .odc-bottom {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-
-    /* Zone 3: text content */
-    .zone-3 {
-      background: var(--zone-bg);
-      border: 1px solid var(--border);
-      border-radius: var(--r);
-      overflow: hidden;
-    }
-    .zone-3-header {
-      padding: 10px 16px;
-      border-bottom: 1px solid var(--border-l);
-      background: var(--cream);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .zone-3-body {
-      padding: 18px 20px;
-    }
-    .zone-3-body h2 {
-      font-family: var(--font-head);
-      font-size: 20px;
-      color: var(--dark);
-      margin-bottom: 10px;
-      line-height: 1.25;
-    }
-    .zone-3-body h3 {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--dark);
-      margin: 16px 0 6px;
-    }
-    .zone-3-body p {
-      font-size: 13.5px;
-      color: var(--mid);
-      line-height: 1.65;
-      margin-bottom: 10px;
-    }
-    .zone-3-body p:last-child { margin-bottom: 0; }
-
-    /* Zone 4: interactivity */
-    .zone-4 {
-      background: var(--zone-bg);
-      border: 1px solid var(--border);
-      border-radius: var(--r);
-      overflow: hidden;
-    }
-    .zone-4-header {
-      padding: 10px 16px;
-      border-bottom: 1px solid var(--border-l);
-      background: var(--cream);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .zone-4-body {
-      padding: 18px 20px;
-    }
-    .zone-4-body h3 {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--dark);
-      margin-bottom: 14px;
-    }
-
-    /* Zone 7: comments */
-    .zone-7 {
-      background: var(--zone-bg);
-      border: 1px solid var(--border);
-      border-radius: var(--r);
-      overflow: hidden;
-    }
-    .zone-7-header {
-      padding: 8px 16px;
-      border-bottom: 1px solid var(--border-l);
-      background: var(--cream);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .zone-7-body {
-      padding: 12px 16px;
-      font-size: 12px;
-      color: var(--mid);
-      line-height: 1.55;
-    }
-
-    /* ===== MENÚ SCREEN ===== */
-    .menu-screen {
-      max-width: 900px;
-      margin: 40px auto;
-      padding: 0 24px;
-    }
-    .menu-title {
-      font-family: var(--font-head);
-      font-size: 32px;
-      color: var(--dark);
-      margin-bottom: 6px;
-    }
-    .menu-subtitle { color: var(--muted); font-size: 14px; margin-bottom: 32px; }
-    .menu-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-    }
-    .menu-card {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 20px;
-      cursor: pointer;
-      text-align: left;
-      transition: all 0.15s;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      font-family: var(--font-body);
-    }
-    .menu-card:hover {
-      border-color: var(--red);
-      box-shadow: 0 0 0 3px var(--red-pale);
-      transform: translateY(-2px);
-    }
-    .menu-number {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--red);
-      font-weight: 500;
-    }
-    .menu-label { font-size: 15px; font-weight: 600; color: var(--dark); }
-    .menu-desc { font-size: 12px; color: var(--muted); }
-    .menu-card--secondary {
-      background: var(--cream);
-      flex-direction: row;
-      align-items: center;
-      gap: 12px;
-    }
-    .menu-card--secondary .menu-icon { font-size: 20px; }
-    .menu-divider { grid-column: 1/-1; height: 1px; background: var(--border-l); }
-    .menu-section-label {
-      grid-column: 1/-1;
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--muted);
-    }
-
-    /* ===== ACTIVITY STYLES ===== */
-    /* V/F */
-    .vf-list { display: flex; flex-direction: column; gap: 14px; }
-    .vf-item { background: var(--cream); border-radius: var(--r); padding: 14px 16px; }
-    .vf-statement { font-size: 13px; color: var(--dark); margin-bottom: 10px; line-height: 1.5; }
-    .vf-buttons { display: flex; gap: 8px; }
-    .vf-btn {
-      padding: 6px 18px;
-      border-radius: 100px;
-      border: 1px solid var(--border);
-      background: var(--white);
-      cursor: pointer;
-      font-size: 12px;
-      font-family: var(--font-body);
-      font-weight: 500;
-      transition: all 0.12s;
-    }
-    .vf-btn:hover { border-color: var(--red); color: var(--red); }
-    .vf-btn.correct { background: #d1fae5; border-color: #6ee7b7; color: #065f46; }
-    .vf-btn.incorrect { background: #fee2e2; border-color: #fca5a5; color: #991b1b; }
-    .vf-feedback { font-size: 12px; margin-top: 8px; font-weight: 500; min-height: 18px; }
-
-    /* MC */
-    .mc-list { display: flex; flex-direction: column; gap: 16px; }
-    .mc-item { background: var(--cream); border-radius: var(--r); padding: 14px 16px; }
-    .mc-question { font-size: 13px; color: var(--dark); margin-bottom: 10px; line-height: 1.5; font-weight: 500; }
-    .mc-options { display: flex; flex-direction: column; gap: 6px; }
-    .mc-btn {
-      padding: 8px 14px;
-      border-radius: var(--r);
-      border: 1px solid var(--border);
-      background: var(--white);
-      cursor: pointer;
-      font-size: 12.5px;
-      text-align: left;
-      font-family: var(--font-body);
-      transition: all 0.12s;
-    }
-    .mc-btn:hover { border-color: var(--red); background: var(--red-pale); }
-    .mc-btn.correct { background: #d1fae5; border-color: #6ee7b7; color: #065f46; }
-    .mc-btn.incorrect { background: #fee2e2; border-color: #fca5a5; color: #991b1b; }
-    .mc-feedback { font-size: 12px; margin-top: 8px; font-weight: 500; min-height: 18px; }
-
-    /* Match */
-    .match-pairs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
-    .match-col { display: flex; flex-direction: column; gap: 6px; }
-    .match-item {
-      padding: 8px 12px;
-      border: 1px solid var(--border);
-      background: var(--white);
-      border-radius: var(--r);
-      cursor: pointer;
-      font-size: 12px;
-      font-family: var(--font-body);
-      text-align: left;
-      transition: all 0.12s;
-    }
-    .match-item:hover { border-color: var(--red); }
-    .match-item.selected { border-color: var(--red); background: var(--red-pale); }
-    .match-item.matched { background: #d1fae5; border-color: #6ee7b7; color: #065f46; }
-    .match-feedback { font-size: 12px; font-weight: 500; }
-
-    /* Sort */
-    .sort-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
-    .sort-item {
-      padding: 9px 14px;
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: var(--r);
-      cursor: grab;
-      font-size: 12.5px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: all 0.12s;
-    }
-    .sort-item::before { content: '⋮⋮'; color: var(--muted); font-size: 11px; }
-    .sort-item.dragging { opacity: 0.5; }
-    .sort-item.correct { background: #d1fae5; border-color: #6ee7b7; }
-    .sort-feedback { font-size: 12px; font-weight: 500; }
-
-    /* Popup info */
-    .popup-trigger {
-      display: inline-block;
-      margin-top: 8px;
-      padding: 4px 12px;
-      background: var(--red-pale);
-      color: var(--red);
-      border: 1px solid #f5c6c8;
-      border-radius: 100px;
-      font-size: 11px;
-      font-weight: 600;
-      cursor: pointer;
-      font-family: var(--font-body);
-      transition: all 0.12s;
-    }
-    .popup-trigger:hover { background: var(--red); color: white; }
-    .popup-panel {
-      display: none;
-      margin-top: 10px;
-      padding: 14px;
-      background: var(--cream);
-      border-left: 3px solid var(--red);
-      border-radius: 0 var(--r) var(--r) 0;
-      font-size: 12.5px;
-      color: var(--mid);
-      line-height: 1.6;
-    }
-    .popup-panel.open { display: block; }
-    .popup-panel h4 { font-size: 13px; color: var(--dark); margin-bottom: 6px; }
-
-    /* Stat cards */
-    .stat-row { display: flex; gap: 10px; flex-wrap: wrap; }
-    .stat-card {
-      flex: 1;
-      min-width: 100px;
-      background: var(--cream);
-      border: 1px solid var(--border);
-      border-radius: var(--r);
-      padding: 14px;
-      text-align: center;
-    }
-    .stat-value { display: block; font-family: var(--font-head); font-size: 28px; color: var(--red); font-weight: 700; }
-    .stat-label { display: block; font-size: 11px; color: var(--muted); line-height: 1.4; margin-top: 4px; }
-
-    /* Feature grid */
-    .feat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0; }
-    .feat-card {
-      background: var(--cream);
-      border: 1px solid var(--border-l);
-      border-radius: var(--r);
-      padding: 12px;
-    }
-    .feat-card h4 { font-size: 12px; font-weight: 700; color: var(--dark); margin-bottom: 4px; font-family: var(--font-mono); }
-    .feat-card p { font-size: 11.5px; color: var(--mid); line-height: 1.5; }
-
-    /* Layer stack */
-    .layer-stack { display: flex; flex-direction: column; gap: 6px; }
-    .layer-item { display: flex; gap: 12px; align-items: flex-start; }
-    .layer-num {
-      width: 24px; height: 24px; flex-shrink: 0;
-      background: var(--red); color: white;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 11px; font-weight: 700;
-    }
-    .layer-info h4 { font-size: 13px; font-weight: 600; color: var(--dark); margin-bottom: 2px; }
-    .layer-info p { font-size: 12px; color: var(--mid); line-height: 1.5; }
-
-    /* Hybrid/fusion/app grid */
-    .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .card-item {
-      background: var(--cream);
-      border: 1px solid var(--border-l);
-      border-radius: var(--r);
-      padding: 12px;
-    }
-    .card-item h4 { font-size: 12px; font-weight: 700; color: var(--dark); margin-bottom: 4px; }
-    .card-item p { font-size: 11.5px; color: var(--mid); line-height: 1.5; }
-    .card-item .app-icon { font-size: 18px; display: block; margin-bottom: 4px; }
-    .fusion-tag {
-      display: inline-block;
-      margin-top: 6px;
-      background: #e0f2fe;
-      color: #0369a1;
-      font-size: 10px;
-      padding: 2px 8px;
-      border-radius: 100px;
-    }
-
-    /* Dataset table */
-    .dataset-table { border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; margin: 10px 0; }
-    .dataset-row {
-      display: grid;
-      grid-template-columns: 1.2fr 0.7fr 0.8fr 2fr;
-      gap: 0;
-      border-bottom: 1px solid var(--border-l);
-      font-size: 11.5px;
-    }
-    .dataset-row:last-child { border-bottom: none; }
-    .dataset-row span { padding: 8px 10px; color: var(--mid); border-right: 1px solid var(--border-l); }
-    .dataset-row span:last-child { border-right: none; }
-    .dataset-header { background: var(--cream); }
-    .dataset-header span { font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
-
-    /* Metric list */
-    .metric-list { display: flex; flex-direction: column; gap: 6px; }
-    .metric-item { font-size: 12.5px; color: var(--mid); padding: 8px 12px; background: var(--cream); border-radius: var(--r); line-height: 1.5; }
-    .metric-item strong { color: var(--dark); }
-
-    /* ===== EVALUACION ===== */
-    .eval-screen {
-      max-width: 800px;
-      margin: 30px auto;
-      padding: 0 24px;
-    }
-    .eval-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 24px;
-    }
-    .eval-top h2 { font-family: var(--font-head); font-size: 28px; color: var(--dark); }
-    .eval-progress-wrap {
-      display: flex; align-items: center; gap: 12px;
-      font-size: 13px; color: var(--mid);
-    }
-    .eval-bar {
-      width: 120px; height: 6px; background: var(--border); border-radius: 100px; overflow: hidden;
-    }
-    .eval-bar-fill { height: 100%; background: var(--red); border-radius: 100px; transition: width 0.3s; }
-    #evalScore { font-weight: 600; color: var(--dark); font-family: var(--font-mono); }
-
-    .eval-q-wrap { display: flex; flex-direction: column; gap: 20px; }
-    .eval-question {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 20px;
-    }
-    .eval-q-number { font-size: 11px; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
-    .eval-result {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 32px;
-      text-align: center;
-      display: none;
-    }
-    .eval-result.visible { display: block; }
-    .eval-result-icon { font-size: 40px; display: block; margin-bottom: 12px; }
-    .eval-result h3 { font-family: var(--font-head); font-size: 24px; color: var(--dark); margin-bottom: 8px; }
-    .eval-result p { color: var(--mid); font-size: 14px; margin-bottom: 20px; }
-
-    /* ===== CONCLUSION / REFS / CREDITS ===== */
-    .text-screen {
-      max-width: 900px;
-      margin: 30px auto;
-      padding: 0 24px;
-    }
-    .text-screen-title { font-family: var(--font-head); font-size: 28px; color: var(--dark); margin-bottom: 24px; }
-    .text-screen-tag {
-      display: inline-block;
-      background: var(--red-pale); color: var(--red);
-      font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
-      padding: 3px 10px; border-radius: 100px; margin-bottom: 10px;
-    }
-
-    .conclusion-block {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 24px;
-      margin-bottom: 14px;
-      display: flex;
-      gap: 20px;
-    }
-    .conclusion-num {
-      font-family: var(--font-head);
-      font-size: 40px;
-      color: var(--border);
-      line-height: 1;
-      flex-shrink: 0;
-      min-width: 52px;
-    }
-    .conclusion-block h3 { font-size: 16px; font-weight: 600; color: var(--dark); margin-bottom: 8px; }
-    .conclusion-block p { font-size: 13.5px; color: var(--mid); line-height: 1.65; }
-
-    .next-steps-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
-    .next-step-item {
-      background: var(--cream);
-      border-radius: var(--r);
-      padding: 16px;
-      display: flex; gap: 12px; align-items: flex-start;
-    }
-    .next-step-item span { font-size: 20px; flex-shrink: 0; }
-    .next-step-item p { font-size: 13px; color: var(--mid); line-height: 1.5; }
-
-    /* References */
-    .ref-list { display: flex; flex-direction: column; gap: 10px; }
-    .ref-item {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: var(--r);
-      padding: 14px 18px;
-      font-size: 13px;
-      color: var(--mid);
-      line-height: 1.6;
-    }
-    .ref-item a { color: var(--red); text-decoration: none; }
-    .ref-item a:hover { text-decoration: underline; }
-
-    /* Credits */
-    .credits-layout {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-      margin-bottom: 20px;
-    }
-    .credits-box {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 20px;
-    }
-    .credits-box h3 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 10px; }
-    .credits-box p { font-size: 14px; color: var(--dark); font-weight: 500; line-height: 1.6; }
-
-    /* Metadatos en créditos */
-    .metadata-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .metadata-table tr { border-bottom: 1px solid var(--border-l); }
-    .metadata-table tr:last-child { border-bottom: none; }
-    .metadata-table td { padding: 8px 12px; }
-    .metadata-table td:first-child { color: var(--muted); width: 40%; font-size: 12px; }
-    .metadata-table td:last-child { color: var(--dark); font-weight: 500; }
-
-    .cc-block {
-      background: var(--cream);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 20px;
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-    .cc-block img { width: 88px; height: 31px; }
-    .cc-block p { font-size: 12.5px; color: var(--mid); line-height: 1.55; }
-
-    .footer-bar {
-      background: var(--red);
-      color: white;
-      text-align: center;
-      padding: 10px 24px;
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      margin-top: 16px;
-    }
-
-    /* ===== MODAL ===== */
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.45);
-      z-index: 2000;
-      align-items: center;
-      justify-content: center;
-    }
-    .modal-overlay.open { display: flex; }
-    .modal {
-      background: var(--white);
-      border-radius: 14px;
-      padding: 32px;
-      max-width: 440px;
-      width: 90%;
-      position: relative;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-    }
-    .modal h3 { font-family: var(--font-head); font-size: 20px; color: var(--dark); margin-bottom: 16px; }
-    .modal p { font-size: 13.5px; color: var(--mid); line-height: 1.65; margin-bottom: 8px; }
-    .modal p strong { color: var(--dark); }
-    .modal-close {
-      position: absolute;
-      top: 16px; right: 16px;
-      background: var(--cream);
-      border: none;
-      width: 30px; height: 30px;
-      border-radius: 50%;
-      cursor: pointer;
-      font-size: 14px;
-      display: flex; align-items: center; justify-content: center;
-    }
-
-    /* ===== UTILITY ===== */
-    .activity-instruction { font-size: 12px; color: var(--muted); margin-bottom: 12px; font-style: italic; }
-    .hidden { display: none !important; }
-    em { color: var(--red); font-style: normal; }
-
-    @media (max-width: 900px) {
-      .odc-top { grid-template-columns: 1fr; }
-      .odc-right-col { flex-direction: row; flex-wrap: wrap; }
-      .zone-2, .zone-5, .zone-6 { flex: 1; min-width: 200px; }
-      .odc-bottom { grid-template-columns: 1fr; }
-      .portada-body { grid-template-columns: 1fr; }
-      .portada-right { display: none; }
-      .menu-grid { grid-template-columns: 1fr 1fr; }
-      .credits-layout { grid-template-columns: 1fr; }
-    }
-  </style>
+  <link rel="stylesheet" href="css/styles.css?v=3b6c5284">
+  <link rel="stylesheet" href="css/responsive.css?v=3b6c5284">
+</head>
 </head>
 <body>
 
@@ -1008,6 +38,7 @@
     <!-- ========== PANTALLA 1: PORTADA ========== -->
     <section class="screen active" id="screen-0" data-screen="0">
       <div class="portada-screen">
+        <canvas class="portada-canvas" id="particleCanvas"></canvas>
         <div class="portada-header">
           <div class="portada-logo-box">
             <div>
@@ -1076,7 +107,7 @@
       <div class="odc-page">
         <div class="odc-top">
           <!-- Zona 1 -->
-          <div class="zone-1">
+          <div class="zone-1 reveal-zone">
             <div class="zone-1-header">
               <span class="zone-num-badge">1</span>
               <span class="zone-label">Imagen de interfaz</span>
@@ -1095,7 +126,7 @@
               <div class="screen-number-value">02</div>
               <div class="screen-number-title">REA + Población Objetivo</div>
             </div>
-            <div class="zone-5">
+            <div class="zone-5 reveal-zone">
               <div class="zone-5-header">
                 <span class="zone-num-badge">5</span>
                 <span class="zone-label">Voces y audios</span>
@@ -1107,7 +138,7 @@
                 </div>
               </div>
             </div>
-            <div class="zone-6">
+            <div class="zone-6 reveal-zone">
               <div class="zone-6-header">
                 <span class="zone-num-badge">6</span>
                 <span class="zone-label">Descripción de imagen</span>
@@ -1117,9 +148,9 @@
           </div>
         </div>
 
-        <div class="odc-bottom">
+        <div class="odc-bottom reveal-zone">
           <!-- Zona 3 -->
-          <div class="zone-3">
+          <div class="zone-3 reveal-zone">
             <div class="zone-3-header">
               <span class="zone-num-badge">3</span>
               <span class="zone-label">Texto contenido</span>
@@ -1132,7 +163,7 @@
             </div>
           </div>
           <!-- Zona 4 -->
-          <div class="zone-4">
+          <div class="zone-4 reveal-zone">
             <div class="zone-4-header">
               <span class="zone-num-badge">4</span>
               <span class="zone-label">Interactividad</span>
@@ -1148,7 +179,7 @@
           </div>
         </div>
 
-        <div class="zone-7">
+        <div class="zone-7 reveal-zone">
           <div class="zone-7-header">
             <span class="zone-num-badge">7</span>
             <span class="zone-label">Comentarios y observaciones</span>
@@ -1186,7 +217,7 @@
     <section class="screen" id="screen-3" data-screen="3">
       <div class="odc-page">
         <div class="odc-top">
-          <div class="zone-1">
+          <div class="zone-1 reveal-zone">
             <div class="zone-1-header"><span class="zone-num-badge">1</span><span class="zone-label">Imagen de interfaz — Módulo 01</span></div>
             <div class="zone-1-body">
               <div class="img-placeholder" style="flex:1;min-height:200px">
@@ -1202,19 +233,19 @@
           </div>
           <div class="odc-right-col">
             <div class="zone-2"><span class="screen-number-label">Pantalla</span><div class="screen-number-value">04</div><div class="screen-number-title">Módulo 01 · El Problema</div></div>
-            <div class="zone-5">
+            <div class="zone-5 reveal-zone">
               <div class="zone-5-header"><span class="zone-num-badge">5</span><span class="zone-label">Voces y audios</span></div>
               <div class="zone-5-body"><div class="avatar-placeholder"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>Video del avatar pendiente</div></div>
             </div>
-            <div class="zone-6">
+            <div class="zone-6 reveal-zone">
               <div class="zone-6-header"><span class="zone-num-badge">6</span><span class="zone-label">Descripción de imagen</span></div>
               <div class="zone-6-body">Estadísticas clave sobre la brecha emocional en la interacción humano-computador y el impacto de las emociones en la comunicación.</div>
             </div>
           </div>
         </div>
 
-        <div class="odc-bottom">
-          <div class="zone-3">
+        <div class="odc-bottom reveal-zone">
+          <div class="zone-3 reveal-zone">
             <div class="zone-3-header"><span class="zone-num-badge">3</span><span class="zone-label">Texto contenido</span></div>
             <div class="zone-3-body">
               <h2>La Brecha Emocional en la Interacción Humano-Computador</h2>
@@ -1225,7 +256,7 @@
               <div class="popup-panel" id="popup-affective"><h4>Computación Afectiva</h4><p>Término acuñado por Rosalind Picard (MIT, 1997). Incluye modalidades como voz, expresión facial, texto, señales fisiológicas y movimiento corporal.</p></div>
             </div>
           </div>
-          <div class="zone-4">
+          <div class="zone-4 reveal-zone">
             <div class="zone-4-header"><span class="zone-num-badge">4</span><span class="zone-label">Interactividad · Verdadero o Falso</span></div>
             <div class="zone-4-body">
               <h3>🧩 Actividad</h3>
@@ -1250,7 +281,7 @@
           </div>
         </div>
 
-        <div class="zone-7"><div class="zone-7-header"><span class="zone-num-badge">7</span><span class="zone-label">Comentarios y observaciones</span></div><div class="zone-7-body">Este módulo introduce el problema central de la investigación: la incapacidad de los sistemas actuales de HCI para reconocer y responder al estado emocional del usuario.</div></div>
+        <div class="zone-7 reveal-zone"><div class="zone-7-header"><span class="zone-num-badge">7</span><span class="zone-label">Comentarios y observaciones</span></div><div class="zone-7-body">Este módulo introduce el problema central de la investigación: la incapacidad de los sistemas actuales de HCI para reconocer y responder al estado emocional del usuario.</div></div>
         <div class="footer-bar">Oficina de Educación Virtual y a Distancia · Universidad de Cundinamarca</div>
       </div>
     </section>
@@ -1259,7 +290,7 @@
     <section class="screen" id="screen-4" data-screen="4">
       <div class="odc-page">
         <div class="odc-top">
-          <div class="zone-1">
+          <div class="zone-1 reveal-zone">
             <div class="zone-1-header"><span class="zone-num-badge">1</span><span class="zone-label">Imagen de interfaz — Módulo 02</span></div>
             <div class="zone-1-body">
               <div class="img-placeholder" style="min-height:160px;margin-bottom:14px">
@@ -1276,12 +307,12 @@
           </div>
           <div class="odc-right-col">
             <div class="zone-2"><span class="screen-number-label">Pantalla</span><div class="screen-number-value">05</div><div class="screen-number-title">Módulo 02 · Fundamentos SER</div></div>
-            <div class="zone-5"><div class="zone-5-header"><span class="zone-num-badge">5</span><span class="zone-label">Voces y audios</span></div><div class="zone-5-body"><div class="avatar-placeholder"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>Video del avatar pendiente</div></div></div>
-            <div class="zone-6"><div class="zone-6-header"><span class="zone-num-badge">6</span><span class="zone-label">Descripción de imagen</span></div><div class="zone-6-body">Las 4 características acústicas principales utilizadas en sistemas SER modernos para representar la señal de voz.</div></div>
+            <div class="zone-5 reveal-zone"><div class="zone-5-header"><span class="zone-num-badge">5</span><span class="zone-label">Voces y audios</span></div><div class="zone-5-body"><div class="avatar-placeholder"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>Video del avatar pendiente</div></div></div>
+            <div class="zone-6 reveal-zone"><div class="zone-6-header"><span class="zone-num-badge">6</span><span class="zone-label">Descripción de imagen</span></div><div class="zone-6-body">Las 4 características acústicas principales utilizadas en sistemas SER modernos para representar la señal de voz.</div></div>
           </div>
         </div>
-        <div class="odc-bottom">
-          <div class="zone-3">
+        <div class="odc-bottom reveal-zone">
+          <div class="zone-3 reveal-zone">
             <div class="zone-3-header"><span class="zone-num-badge">3</span><span class="zone-label">Texto contenido</span></div>
             <div class="zone-3-body">
               <h2>Fundamentos del Reconocimiento Emocional por Voz</h2>
@@ -1291,7 +322,7 @@
               <div class="popup-panel" id="popup-mel"><h4>Escala Mel</h4><p>El oído humano no percibe las frecuencias linealmente. La escala Mel da más resolución a frecuencias bajas (donde se concentra el habla) y menos a altas.</p></div>
             </div>
           </div>
-          <div class="zone-4">
+          <div class="zone-4 reveal-zone">
             <div class="zone-4-header"><span class="zone-num-badge">4</span><span class="zone-label">Interactividad · Relaciona conceptos</span></div>
             <div class="zone-4-body">
               <h3>🧩 Relaciona cada característica</h3>
@@ -1304,7 +335,7 @@
             </div>
           </div>
         </div>
-        <div class="zone-7"><div class="zone-7-header"><span class="zone-num-badge">7</span><span class="zone-label">Comentarios y observaciones</span></div><div class="zone-7-body">Módulo sobre las bases teóricas del SER: qué es, cómo funciona su pipeline y cuáles son las características acústicas más relevantes para la clasificación emocional.</div></div>
+        <div class="zone-7 reveal-zone"><div class="zone-7-header"><span class="zone-num-badge">7</span><span class="zone-label">Comentarios y observaciones</span></div><div class="zone-7-body">Módulo sobre las bases teóricas del SER: qué es, cómo funciona su pipeline y cuáles son las características acústicas más relevantes para la clasificación emocional.</div></div>
         <div class="footer-bar">Oficina de Educación Virtual y a Distancia · Universidad de Cundinamarca</div>
       </div>
     </section>
@@ -1313,7 +344,7 @@
     <section class="screen" id="screen-5" data-screen="5">
       <div class="odc-page">
         <div class="odc-top">
-          <div class="zone-1">
+          <div class="zone-1 reveal-zone">
             <div class="zone-1-header"><span class="zone-num-badge">1</span><span class="zone-label">Imagen de interfaz — Módulo 03</span></div>
             <div class="zone-1-body">
               <div class="img-placeholder" style="min-height:160px;margin-bottom:14px"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span>Diagrama de arquitectura CNN para SER</span></div>
@@ -1328,12 +359,12 @@
           </div>
           <div class="odc-right-col">
             <div class="zone-2"><span class="screen-number-label">Pantalla</span><div class="screen-number-value">06</div><div class="screen-number-title">Módulo 03 · CNNs para SER</div></div>
-            <div class="zone-5"><div class="zone-5-header"><span class="zone-num-badge">5</span><span class="zone-label">Voces y audios</span></div><div class="zone-5-body"><div class="avatar-placeholder"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>Video del avatar pendiente</div></div></div>
-            <div class="zone-6"><div class="zone-6-header"><span class="zone-num-badge">6</span><span class="zone-label">Descripción de imagen</span></div><div class="zone-6-body">Arquitectura en capas de una CNN para clasificación emocional, desde la entrada del espectrograma hasta la predicción final.</div></div>
+            <div class="zone-5 reveal-zone"><div class="zone-5-header"><span class="zone-num-badge">5</span><span class="zone-label">Voces y audios</span></div><div class="zone-5-body"><div class="avatar-placeholder"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>Video del avatar pendiente</div></div></div>
+            <div class="zone-6 reveal-zone"><div class="zone-6-header"><span class="zone-num-badge">6</span><span class="zone-label">Descripción de imagen</span></div><div class="zone-6-body">Arquitectura en capas de una CNN para clasificación emocional, desde la entrada del espectrograma hasta la predicción final.</div></div>
           </div>
         </div>
-        <div class="odc-bottom">
-          <div class="zone-3">
+        <div class="odc-bottom reveal-zone">
+          <div class="zone-3 reveal-zone">
             <div class="zone-3-header"><span class="zone-num-badge">3</span><span class="zone-label">Texto contenido</span></div>
             <div class="zone-3-body">
               <h2>Redes Neuronales Convolucionales para SER</h2>
@@ -1349,7 +380,7 @@
               <div class="popup-panel" id="popup-transformer"><h4>Transformer</h4><p>Arquitectura basada en auto-atención que procesa secuencias completas en paralelo. Modelos como wav2vec 2.0 aprenden representaciones del habla de forma auto-supervisada.</p></div>
             </div>
           </div>
-          <div class="zone-4">
+          <div class="zone-4 reveal-zone">
             <div class="zone-4-header"><span class="zone-num-badge">4</span><span class="zone-label">Interactividad · Ordenar capas</span></div>
             <div class="zone-4-body">
               <h3>🧩 Ordena las capas de una CNN</h3>
@@ -1366,7 +397,7 @@
             </div>
           </div>
         </div>
-        <div class="zone-7"><div class="zone-7-header"><span class="zone-num-badge">7</span><span class="zone-label">Comentarios y observaciones</span></div><div class="zone-7-body">Módulo sobre arquitecturas CNN para SER: cómo procesan espectrogramas y los modelos híbridos que han demostrado mayor rendimiento.</div></div>
+        <div class="zone-7 reveal-zone"><div class="zone-7-header"><span class="zone-num-badge">7</span><span class="zone-label">Comentarios y observaciones</span></div><div class="zone-7-body">Módulo sobre arquitecturas CNN para SER: cómo procesan espectrogramas y los modelos híbridos que han demostrado mayor rendimiento.</div></div>
         <div class="footer-bar">Oficina de Educación Virtual y a Distancia · Universidad de Cundinamarca</div>
       </div>
     </section>
@@ -1375,7 +406,7 @@
     <section class="screen" id="screen-6" data-screen="6">
       <div class="odc-page">
         <div class="odc-top">
-          <div class="zone-1">
+          <div class="zone-1 reveal-zone">
             <div class="zone-1-header"><span class="zone-num-badge">1</span><span class="zone-label">Imagen de interfaz — Módulo 04</span></div>
             <div class="zone-1-body">
               <div class="img-placeholder" style="min-height:160px;margin-bottom:14px"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="14" rx="2"/></svg><span>Diagrama de estrategias de fusión (temprana / tardía / híbrida)</span></div>
@@ -1389,12 +420,12 @@
           </div>
           <div class="odc-right-col">
             <div class="zone-2"><span class="screen-number-label">Pantalla</span><div class="screen-number-value">07</div><div class="screen-number-title">Módulo 04 · Fusión y Ensambles</div></div>
-            <div class="zone-5"><div class="zone-5-header"><span class="zone-num-badge">5</span><span class="zone-label">Voces y audios</span></div><div class="zone-5-body"><div class="avatar-placeholder"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>Video del avatar pendiente</div></div></div>
-            <div class="zone-6"><div class="zone-6-header"><span class="zone-num-badge">6</span><span class="zone-label">Descripción de imagen</span></div><div class="zone-6-body">Comparativa de resultados de accuracy según tipo de fusión y estrategia ensemble en los estudios revisados.</div></div>
+            <div class="zone-5 reveal-zone"><div class="zone-5-header"><span class="zone-num-badge">5</span><span class="zone-label">Voces y audios</span></div><div class="zone-5-body"><div class="avatar-placeholder"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>Video del avatar pendiente</div></div></div>
+            <div class="zone-6 reveal-zone"><div class="zone-6-header"><span class="zone-num-badge">6</span><span class="zone-label">Descripción de imagen</span></div><div class="zone-6-body">Comparativa de resultados de accuracy según tipo de fusión y estrategia ensemble en los estudios revisados.</div></div>
           </div>
         </div>
-        <div class="odc-bottom">
-          <div class="zone-3">
+        <div class="odc-bottom reveal-zone">
+          <div class="zone-3 reveal-zone">
             <div class="zone-3-header"><span class="zone-num-badge">3</span><span class="zone-label">Texto contenido</span></div>
             <div class="zone-3-body">
               <h2>Fusión de Características y Estrategias Ensemble</h2>
@@ -1407,7 +438,7 @@
               <div class="popup-panel" id="popup-voting"><h4>Soft vs Hard Voting</h4><p><strong>Hard:</strong> vota por mayoría de clases. <strong>Soft:</strong> promedia probabilidades — más preciso porque aprovecha la confianza de cada modelo.</p></div>
             </div>
           </div>
-          <div class="zone-4">
+          <div class="zone-4 reveal-zone">
             <div class="zone-4-header"><span class="zone-num-badge">4</span><span class="zone-label">Interactividad · Identifica la fusión</span></div>
             <div class="zone-4-body">
               <h3>🧩 Identifica el tipo de fusión</h3>
@@ -1426,7 +457,7 @@
             </div>
           </div>
         </div>
-        <div class="zone-7"><div class="zone-7-header"><span class="zone-num-badge">7</span><span class="zone-label">Comentarios y observaciones</span></div><div class="zone-7-body">Módulo sobre estrategias de fusión de características y modelos ensemble; explica las ventajas de combinar múltiples fuentes de información para mejorar la precisión del SER.</div></div>
+        <div class="zone-7 reveal-zone"><div class="zone-7-header"><span class="zone-num-badge">7</span><span class="zone-label">Comentarios y observaciones</span></div><div class="zone-7-body">Módulo sobre estrategias de fusión de características y modelos ensemble; explica las ventajas de combinar múltiples fuentes de información para mejorar la precisión del SER.</div></div>
         <div class="footer-bar">Oficina de Educación Virtual y a Distancia · Universidad de Cundinamarca</div>
       </div>
     </section>
@@ -1435,7 +466,7 @@
     <section class="screen" id="screen-7" data-screen="7">
       <div class="odc-page">
         <div class="odc-top">
-          <div class="zone-1">
+          <div class="zone-1 reveal-zone">
             <div class="zone-1-header"><span class="zone-num-badge">1</span><span class="zone-label">Imagen de interfaz — Módulo 05</span></div>
             <div class="zone-1-body">
               <div class="img-placeholder" style="min-height:140px;margin-bottom:14px"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="14" rx="2"/></svg><span>Diagrama de aplicaciones SER en HCI</span></div>
@@ -1451,12 +482,12 @@
           </div>
           <div class="odc-right-col">
             <div class="zone-2"><span class="screen-number-label">Pantalla</span><div class="screen-number-value">08</div><div class="screen-number-title">Módulo 05 · Aplicaciones en HCI</div></div>
-            <div class="zone-5"><div class="zone-5-header"><span class="zone-num-badge">5</span><span class="zone-label">Voces y audios</span></div><div class="zone-5-body"><div class="avatar-placeholder"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>Video del avatar pendiente</div></div></div>
-            <div class="zone-6"><div class="zone-6-header"><span class="zone-num-badge">6</span><span class="zone-label">Descripción de imagen</span></div><div class="zone-6-body">Seis dominios de aplicación donde SER transforma la interacción humano-computador con interfaces emocionalmente adaptativas.</div></div>
+            <div class="zone-5 reveal-zone"><div class="zone-5-header"><span class="zone-num-badge">5</span><span class="zone-label">Voces y audios</span></div><div class="zone-5-body"><div class="avatar-placeholder"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>Video del avatar pendiente</div></div></div>
+            <div class="zone-6 reveal-zone"><div class="zone-6-header"><span class="zone-num-badge">6</span><span class="zone-label">Descripción de imagen</span></div><div class="zone-6-body">Seis dominios de aplicación donde SER transforma la interacción humano-computador con interfaces emocionalmente adaptativas.</div></div>
           </div>
         </div>
-        <div class="odc-bottom">
-          <div class="zone-3">
+        <div class="odc-bottom reveal-zone">
+          <div class="zone-3 reveal-zone">
             <div class="zone-3-header"><span class="zone-num-badge">3</span><span class="zone-label">Texto contenido</span></div>
             <div class="zone-3-body">
               <h2>Aplicaciones de SER en la Interacción Humano-Computador</h2>
@@ -1464,7 +495,7 @@
               <p>Hu et al. (2025) demostraron que la clasificación sensible al género mejora significativamente la detección: <strong>92% de accuracy</strong> para voces femeninas vs <strong>87%</strong> para masculinas, evidenciando la importancia de adaptar el sistema al usuario individual.</p>
             </div>
           </div>
-          <div class="zone-4">
+          <div class="zone-4 reveal-zone">
             <div class="zone-4-header"><span class="zone-num-badge">4</span><span class="zone-label">Interactividad · Caso breve</span></div>
             <div class="zone-4-body">
               <h3>🧩 Caso breve</h3>
@@ -1478,7 +509,7 @@
             </div>
           </div>
         </div>
-        <div class="zone-7"><div class="zone-7-header"><span class="zone-num-badge">7</span><span class="zone-label">Comentarios y observaciones</span></div><div class="zone-7-body">Módulo sobre las aplicaciones prácticas del SER en interfaces adaptativas: e-learning, call centers, asistentes virtuales, vehículos y salud mental.</div></div>
+        <div class="zone-7 reveal-zone"><div class="zone-7-header"><span class="zone-num-badge">7</span><span class="zone-label">Comentarios y observaciones</span></div><div class="zone-7-body">Módulo sobre las aplicaciones prácticas del SER en interfaces adaptativas: e-learning, call centers, asistentes virtuales, vehículos y salud mental.</div></div>
         <div class="footer-bar">Oficina de Educación Virtual y a Distancia · Universidad de Cundinamarca</div>
       </div>
     </section>
@@ -1487,7 +518,7 @@
     <section class="screen" id="screen-8" data-screen="8">
       <div class="odc-page">
         <div class="odc-top">
-          <div class="zone-1">
+          <div class="zone-1 reveal-zone">
             <div class="zone-1-header"><span class="zone-num-badge">1</span><span class="zone-label">Imagen de interfaz — Módulo 06</span></div>
             <div class="zone-1-body">
               <div class="img-placeholder" style="min-height:120px;margin-bottom:14px"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="14" rx="2"/></svg><span>Tabla comparativa de datasets SER</span></div>
@@ -1505,12 +536,12 @@
           </div>
           <div class="odc-right-col">
             <div class="zone-2"><span class="screen-number-label">Pantalla</span><div class="screen-number-value">09</div><div class="screen-number-title">Módulo 06 · Estado del Arte</div></div>
-            <div class="zone-5"><div class="zone-5-header"><span class="zone-num-badge">5</span><span class="zone-label">Voces y audios</span></div><div class="zone-5-body"><div class="avatar-placeholder"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>Video del avatar pendiente</div></div></div>
-            <div class="zone-6"><div class="zone-6-header"><span class="zone-num-badge">6</span><span class="zone-label">Descripción de imagen</span></div><div class="zone-6-body">Datasets de referencia más utilizados en la investigación reciente en SER, con idioma, tipo y número de emociones.</div></div>
+            <div class="zone-5 reveal-zone"><div class="zone-5-header"><span class="zone-num-badge">5</span><span class="zone-label">Voces y audios</span></div><div class="zone-5-body"><div class="avatar-placeholder"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>Video del avatar pendiente</div></div></div>
+            <div class="zone-6 reveal-zone"><div class="zone-6-header"><span class="zone-num-badge">6</span><span class="zone-label">Descripción de imagen</span></div><div class="zone-6-body">Datasets de referencia más utilizados en la investigación reciente en SER, con idioma, tipo y número de emociones.</div></div>
           </div>
         </div>
-        <div class="odc-bottom">
-          <div class="zone-3">
+        <div class="odc-bottom reveal-zone">
+          <div class="zone-3 reveal-zone">
             <div class="zone-3-header"><span class="zone-num-badge">3</span><span class="zone-label">Texto contenido</span></div>
             <div class="zone-3-body">
               <h2>Estado del Arte: Datasets y Tendencias</h2>
@@ -1524,7 +555,7 @@
               <p>Transformers (Wav2Vec 2.0): 91.6% con aprendizaje auto-supervisado. Mel-espectrogramas superan MFCCs por 3–5 puntos. El aumento de datos es esencial para robustez (Aggarwal et al., 2026).</p>
             </div>
           </div>
-          <div class="zone-4">
+          <div class="zone-4 reveal-zone">
             <div class="zone-4-header"><span class="zone-num-badge">4</span><span class="zone-label">Interactividad · Selección múltiple</span></div>
             <div class="zone-4-body">
               <h3>🧩 Selección múltiple</h3>
@@ -1543,7 +574,7 @@
             </div>
           </div>
         </div>
-        <div class="zone-7"><div class="zone-7-header"><span class="zone-num-badge">7</span><span class="zone-label">Comentarios y observaciones</span></div><div class="zone-7-body">Módulo sobre datasets de referencia, métricas de evaluación y tendencias actuales en investigación SER con CNNs.</div></div>
+        <div class="zone-7 reveal-zone"><div class="zone-7-header"><span class="zone-num-badge">7</span><span class="zone-label">Comentarios y observaciones</span></div><div class="zone-7-body">Módulo sobre datasets de referencia, métricas de evaluación y tendencias actuales en investigación SER con CNNs.</div></div>
         <div class="footer-bar">Oficina de Educación Virtual y a Distancia · Universidad de Cundinamarca</div>
       </div>
     </section>
@@ -1693,212 +724,9 @@
     </div>
   </div>
 
-  <script>
-  // ===== NAVIGATION =====
-  const TOTAL = 13;
-  let current = 0;
-
-  function showScreen(n) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById('screen-' + n).classList.add('active');
-    current = n;
-    document.getElementById('progressFill').style.width = ((n / (TOTAL - 1)) * 100) + '%';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  document.getElementById('btnNext').addEventListener('click', () => { if (current < TOTAL - 1) showScreen(current + 1); });
-  document.getElementById('btnPrev').addEventListener('click', () => { if (current > 0) showScreen(current - 1); });
-  document.getElementById('btnIniciar')?.addEventListener('click', () => showScreen(1));
-  document.getElementById('btnGoMenu')?.addEventListener('click', () => showScreen(2));
-  document.getElementById('btnMenu').addEventListener('click', () => showScreen(2));
-
-  document.querySelectorAll('[data-goto]').forEach(btn => {
-    btn.addEventListener('click', () => showScreen(parseInt(btn.dataset.goto)));
-  });
-
-  // ===== MODAL =====
-  document.getElementById('btnAyuda')?.addEventListener('click', () => document.getElementById('modalAyuda').classList.add('open'));
-  document.getElementById('modalClose')?.addEventListener('click', () => document.getElementById('modalAyuda').classList.remove('open'));
-  document.getElementById('modalAyuda')?.addEventListener('click', e => { if (e.target === e.currentTarget) e.currentTarget.classList.remove('open'); });
-
-  // ===== POPUPS =====
-  document.querySelectorAll('.popup-trigger').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const panel = document.getElementById(btn.dataset.popup);
-      if (panel) panel.classList.toggle('open');
-    });
-  });
-
-  // ===== V/F ACTIVITY =====
-  document.querySelectorAll('.vf-item').forEach(item => {
-    const correct = item.dataset.correct;
-    item.querySelectorAll('.vf-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        if (item.querySelector('.vf-btn.correct') || item.querySelector('.vf-btn.incorrect')) return;
-        const answer = btn.dataset.answer;
-        const fb = item.querySelector('.vf-feedback');
-        if (answer === correct) {
-          btn.classList.add('correct');
-          fb.textContent = '✓ Correcto';
-          fb.style.color = '#065f46';
-        } else {
-          btn.classList.add('incorrect');
-          fb.textContent = '✗ Incorrecto. La respuesta es ' + (correct === 'true' ? 'Verdadero' : 'Falso');
-          fb.style.color = '#991b1b';
-        }
-      });
-    });
-  });
-
-  // ===== MC ACTIVITY =====
-  document.querySelectorAll('.mc-item').forEach(item => {
-    const correct = item.dataset.correct;
-    if (!correct) return;
-    item.querySelectorAll('.mc-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        if (item.querySelector('.mc-btn.correct') || item.querySelector('.mc-btn.incorrect')) return;
-        const fb = item.querySelector('.mc-feedback');
-        if (btn.dataset.option === correct) {
-          btn.classList.add('correct');
-          fb.textContent = '✓ Correcto';
-          fb.style.color = '#065f46';
-        } else {
-          btn.classList.add('incorrect');
-          fb.textContent = '✗ Incorrecto';
-          fb.style.color = '#991b1b';
-          item.querySelector('[data-option="' + correct + '"]')?.classList.add('correct');
-        }
-      });
-    });
-  });
-
-  // Caso m5 standalone
-  const caseFb = document.getElementById('case-feedback-m5');
-  document.querySelectorAll('#case-m5-opts .mc-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      if (document.querySelector('#case-m5-opts .mc-btn.correct')) return;
-      if (btn.dataset.option === 'b') {
-        btn.classList.add('correct');
-        caseFb.textContent = '✓ Correcto. El módulo SER de audio es el más directo, no invasivo y disponible en cualquier dispositivo.';
-        caseFb.style.color = '#065f46';
-      } else {
-        btn.classList.add('incorrect');
-        caseFb.textContent = '✗ El módulo SER de audio/micrófono es la opción más accesible y directa.';
-        caseFb.style.color = '#991b1b';
-        document.querySelector('#case-m5-opts [data-option="b"]').classList.add('correct');
-      }
-    });
-  });
-
-  // ===== MATCH ACTIVITY =====
-  let selectedTerm = null;
-  let matchedPairs = 0;
-  document.querySelectorAll('.match-col:first-child .match-item').forEach(term => {
-    term.addEventListener('click', () => {
-      document.querySelectorAll('.match-col:first-child .match-item').forEach(t => t.classList.remove('selected'));
-      selectedTerm = term;
-      term.classList.add('selected');
-    });
-  });
-  document.querySelectorAll('.match-col:last-child .match-item').forEach(def => {
-    def.addEventListener('click', () => {
-      if (!selectedTerm) return;
-      const fb = document.getElementById('match-feedback-m2');
-      if (selectedTerm.dataset.match === def.dataset.match) {
-        selectedTerm.classList.remove('selected');
-        selectedTerm.classList.add('matched');
-        def.classList.add('matched');
-        matchedPairs++;
-        selectedTerm = null;
-        if (matchedPairs === 4) { fb.textContent = '✓ ¡Excelente! Todas las parejas son correctas.'; fb.style.color = '#065f46'; }
-      } else {
-        fb.textContent = '✗ Esa combinación no es correcta. Intenta de nuevo.';
-        fb.style.color = '#991b1b';
-        selectedTerm.classList.remove('selected');
-        selectedTerm = null;
-      }
-    });
-  });
-
-  // ===== SORT ACTIVITY =====
-  const sortList = document.getElementById('sort-m3');
-  let dragSrc = null;
-  if (sortList) {
-    sortList.querySelectorAll('.sort-item').forEach(item => {
-      item.addEventListener('dragstart', e => { dragSrc = item; item.classList.add('dragging'); });
-      item.addEventListener('dragend', () => item.classList.remove('dragging'));
-      item.addEventListener('dragover', e => { e.preventDefault(); const rect = item.getBoundingClientRect(); const mid = rect.top + rect.height / 2; if (e.clientY < mid) sortList.insertBefore(dragSrc, item); else sortList.insertBefore(dragSrc, item.nextSibling); });
-    });
-    document.getElementById('checkSort-m3')?.addEventListener('click', () => {
-      const items = [...sortList.querySelectorAll('.sort-item')];
-      const fb = document.getElementById('sort-feedback-m3');
-      const isCorrect = items.every((item, i) => parseInt(item.dataset.order) === i + 1);
-      if (isCorrect) { items.forEach(i => i.classList.add('correct')); fb.textContent = '✓ ¡Orden correcto!'; fb.style.color = '#065f46'; }
-      else { fb.textContent = '✗ El orden no es correcto. Intenta de nuevo.'; fb.style.color = '#991b1b'; }
-    });
-  }
-
-  // ===== EVALUACIÓN FINAL =====
-  let evalAnswered = 0;
-  let evalCorrect = 0;
-  const evalQuestions = document.querySelectorAll('.eval-question');
-  const evalResult = document.getElementById('evalResult');
-
-  evalQuestions.forEach(q => {
-    const correct = q.dataset.correct;
-    q.querySelectorAll('.mc-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        if (q.classList.contains('answered')) return;
-        q.classList.add('answered');
-        const fb = q.querySelector('.mc-feedback');
-        if (btn.dataset.option === correct) {
-          btn.classList.add('correct');
-          evalCorrect++;
-          fb.textContent = '✓ Correcto';
-          fb.style.color = '#065f46';
-        } else {
-          btn.classList.add('incorrect');
-          fb.textContent = '✗ Incorrecto';
-          fb.style.color = '#991b1b';
-          q.querySelector('[data-option="' + correct + '"]')?.classList.add('correct');
-        }
-        evalAnswered++;
-        document.getElementById('evalScore').textContent = evalCorrect + ' / 8';
-        document.getElementById('evalBarFill').style.width = (evalCorrect / 8 * 100) + '%';
-        if (evalAnswered === 8) {
-          setTimeout(() => {
-            evalResult.classList.add('visible');
-            const icon = document.getElementById('evalResultIcon');
-            const title = document.getElementById('evalResultTitle');
-            const text = document.getElementById('evalResultText');
-            const retry = document.getElementById('evalRetry');
-            if (evalCorrect >= 6) {
-              icon.textContent = '🎉';
-              title.textContent = '¡Aprobado! ' + evalCorrect + '/8';
-              text.textContent = 'Has alcanzado el REA. Obtuviste ' + Math.round(evalCorrect/8*100) + '% de acierto.';
-            } else {
-              icon.textContent = '📚';
-              title.textContent = 'Necesitas repasar · ' + evalCorrect + '/8';
-              text.textContent = 'Obtuviste ' + Math.round(evalCorrect/8*100) + '%. Necesitas al menos 80% (6/8) para aprobar.';
-              retry.style.display = 'inline-flex';
-            }
-          }, 400);
-        }
-      });
-    });
-  });
-
-  document.getElementById('evalRetry')?.addEventListener('click', () => {
-    evalAnswered = 0; evalCorrect = 0;
-    evalQuestions.forEach(q => {
-      q.classList.remove('answered');
-      q.querySelectorAll('.mc-btn').forEach(b => b.classList.remove('correct','incorrect'));
-      q.querySelector('.mc-feedback').textContent = '';
-    });
-    evalResult.classList.remove('visible');
-    document.getElementById('evalScore').textContent = '0 / 8';
-    document.getElementById('evalBarFill').style.width = '0%';
-  });
-  </script>
+  <script src="js/navigation.js?v=3b6c5284"></script>
+  <script src="js/interactions.js?v=3b6c5284"></script>
+  <script src="js/quiz.js?v=3b6c5284"></script>
+  <script src="js/app.js?v=3b6c5284"></script>
 </body>
 </html>
