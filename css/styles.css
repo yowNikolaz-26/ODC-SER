@@ -793,6 +793,15 @@ em { color: var(--red); font-style: normal; }
   object-fit: contain;
 }
  
+.portada-logo-img {
+  width: 100%;
+  max-width: 90px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  object-fit: contain;
+}
+ 
 /* ---- IMAGEN PRINCIPAL DE PORTADA ---- */
 .portada-main-img {
   width: 100%;
@@ -818,7 +827,7 @@ em { color: var(--red); font-style: normal; }
   border: 1px solid rgba(0,0,0,0.06);
 }
  
-/* Versiones más pequeñas para módulos que tienen mucho contenido adicional debajo (feat-grid, layer-stack, card-grid, dataset-table) */
+/* Versiones más pequeñas para módulos con mucho contenido adicional debajo */
 .zone-img--sm {
   min-height: 140px;
   max-height: 200px;
@@ -829,26 +838,4 @@ em { color: var(--red); font-style: normal; }
   min-height: 110px;
   max-height: 160px;
   margin-bottom: 14px;
-}
- 
-/* ---- FALLBACK si la imagen no carga ---- */
-.zone-img[alt]:after,
-.portada-main-img[alt]:after,
-.portada-logo-img[alt]:after {
-  content: "⚠ " attr(alt) " — imagen no encontrada";
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  min-height: 120px;
-  background: #fafaf7;
-  color: #999;
-  font-size: 13px;
-  font-style: italic;
-  text-align: center;
-  padding: 20px;
-  border: 2px dashed #ddd;
-  border-radius: 8px;
-  box-sizing: border-box;
 }

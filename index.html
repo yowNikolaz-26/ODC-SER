@@ -10,8 +10,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=4a7e9f12">
-  <link rel="stylesheet" href="css/responsive.css?v=4a7e9f12">
+  <link rel="stylesheet" href="css/styles.css?v=5b9f2c73">
+  <link rel="stylesheet" href="css/responsive.css?v=5b9f2c73">
 </head>
 <body>
 
@@ -39,11 +39,9 @@
       <div class="portada-screen">
         <canvas class="portada-canvas" id="particleCanvas"></canvas>
         <div class="portada-header">
+          <!-- LOGO UNIVERSIDAD -->
           <div class="portada-logo-box">
-            <div>
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="display:block;margin:0 auto 4px"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 21V9"/></svg>
-              Logo Universidad<br>de Cundinamarca
-            </div>
+            <img src="assets/images/uni.png" alt="Logo Universidad de Cundinamarca" class="portada-logo-img">
           </div>
           <div class="portada-udec">
             <strong>Universidad de Cundinamarca</strong>
@@ -80,9 +78,9 @@
             </div>
           </div>
           <div class="portada-right">
+            <!-- IMAGEN DE PORTADA -->
             <div class="portada-image-box">
-              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-              <span>Imagen de portada<br><small>(reemplaza esta caja)</small></span>
+              <img src="assets/images/portada.jpg" alt="Reconocimiento emocional por voz" class="portada-main-img">
             </div>
             <div class="portada-tags">
               <span class="portada-tag">Speech Emotion Recognition</span>
@@ -112,10 +110,8 @@
               <span class="zone-label">Imagen de interfaz</span>
             </div>
             <div class="zone-1-body">
-              <div class="img-placeholder" style="flex:1">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-                <span>Imagen / captura de pantalla del contenido<br><small>Reemplaza esta caja con tu imagen</small></span>
-              </div>
+              <!-- IMAGEN REA / POBLACIÓN -->
+              <img src="assets/images/rea.jpg" alt="REA y población objetivo del ODC" class="zone-img">
             </div>
           </div>
           <!-- Columna derecha -->
@@ -131,7 +127,7 @@
                 <span class="zone-label">Voces y audios</span>
               </div>
               <div class="zone-5-body">
-                <video class="avatar-video" controls preload="metadata" 
+                <video class="avatar-video" controls preload="metadata"
                       poster="assets/media/fusion-Cover.jpg">
                   <source src="assets/media/Rea.mp4" type="video/mp4">
                 </video>
@@ -219,14 +215,12 @@
           <div class="zone-1 reveal-zone">
             <div class="zone-1-header"><span class="zone-num-badge">1</span><span class="zone-label">Imagen de interfaz — Módulo 01</span></div>
             <div class="zone-1-body">
-              <div class="img-placeholder" style="flex:1;min-height:200px">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-                <span>Infografía / imagen sobre la brecha emocional en HCI</span>
-              </div>
+              <!-- IMAGEN MÓDULO 01 - EL PROBLEMA -->
+              <img src="assets/images/brecha.png" alt="La brecha emocional en HCI" class="zone-img">
               <div class="stat-row" style="margin-top:14px">
-                <div class="stat-card"><span class="stat-value">38%</span><span class="stat-label">del significado emocional percibido proviene del tono de voz ante mensajes incongruentes (Mehrabian &amp; Wiener, 1967)</span></div>
-                <div class="stat-card"><span class="stat-value">96.5%</span><span class="stat-label">accuracy alcanzado por CNN-LSTM en SER moderno, según Bhanbhro et al. (2025)</span></div>
-                <div class="stat-card"><span class="stat-value">6</span><span class="stat-label">emociones básicas propuestas por Ekman (1992): alegría, tristeza, ira, miedo, sorpresa y asco</span></div>
+                <div class="stat-card"><span data-count="38" data-suffix="%">38%</span><span class="stat-label">del significado emocional percibido proviene del tono de voz ante mensajes incongruentes (Mehrabian &amp; Wiener, 1967)</span></div>
+                <div class="stat-card"><span data-count="96.5" data-suffix="%">96.5%</span><span class="stat-label">accuracy alcanzado por CNN-LSTM en SER moderno, según Bhanbhro et al. (2025)</span></div>
+                <div class="stat-card"><span data-count="6">6</span><span class="stat-label">emociones básicas propuestas por Ekman (1992): alegría, tristeza, ira, miedo, sorpresa y asco</span></div>
               </div>
             </div>
           </div>
@@ -235,10 +229,11 @@
             <div class="zone-5 reveal-zone">
               <div class="zone-5-header"><span class="zone-num-badge">5</span><span class="zone-label">Voces y audios</span></div>
               <div class="zone-5-body">
-                <video class="avatar-video" controls preload="metadata" 
+                <video class="avatar-video" controls preload="metadata"
                   poster="assets/media/fusion-Cover.jpg">
                   <source src="assets/media/problema.mp4" type="video/mp4">
-                </video></div>
+                </video>
+              </div>
             </div>
             <div class="zone-6 reveal-zone">
               <div class="zone-6-header"><span class="zone-num-badge">6</span><span class="zone-label">Descripción de imagen</span></div>
@@ -296,10 +291,8 @@
           <div class="zone-1 reveal-zone">
             <div class="zone-1-header"><span class="zone-num-badge">1</span><span class="zone-label">Imagen de interfaz — Módulo 02</span></div>
             <div class="zone-1-body">
-              <div class="img-placeholder" style="min-height:160px;margin-bottom:14px">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-                <span>Diagrama del pipeline SER / espectrograma Mel</span>
-              </div>
+              <!-- IMAGEN MÓDULO 02 - FUNDAMENTOS SER -->
+              <img src="assets/images/fundamento.png" alt="Pipeline SER y espectrograma Mel" class="zone-img zone-img--sm">
               <div class="feat-grid">
                 <div class="feat-card"><h4>MFCC</h4><p>Coeficientes cepstrales en escala Mel; simulan la percepción auditiva humana. La característica más usada en SER (Hu et al., 2025; Chowdhury et al., 2025).</p></div>
                 <div class="feat-card"><h4>Mel Spectrogram</h4><p>Representación visual tiempo-frecuencia tratada como imagen 2D por las CNNs (Begazo et al., 2024).</p></div>
@@ -313,10 +306,11 @@
             <div class="zone-5 reveal-zone">
               <div class="zone-5-header"><span class="zone-num-badge">5</span><span class="zone-label">Voces y audios</span></div>
               <div class="zone-5-body">
-                <video class="avatar-video" controls preload="metadata" 
+                <video class="avatar-video" controls preload="metadata"
                   poster="assets/media/fusion-Cover.jpg">
                   <source src="assets/media/fundamentos.mp4" type="video/mp4">
-                </video></div>
+                </video>
+              </div>
             </div>
             <div class="zone-6 reveal-zone"><div class="zone-6-header"><span class="zone-num-badge">6</span><span class="zone-label">Descripción de imagen</span></div><div class="zone-6-body">Las principales familias de características acústicas utilizadas en sistemas SER modernos para representar la señal de voz.</div></div>
           </div>
@@ -357,7 +351,8 @@
           <div class="zone-1 reveal-zone">
             <div class="zone-1-header"><span class="zone-num-badge">1</span><span class="zone-label">Imagen de interfaz — Módulo 03</span></div>
             <div class="zone-1-body">
-              <div class="img-placeholder" style="min-height:160px;margin-bottom:14px"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span>Diagrama de arquitectura CNN para SER</span></div>
+              <!-- IMAGEN MÓDULO 03 - CNNs -->
+              <img src="assets/images/arq.png" alt="Arquitectura CNN para SER" class="zone-img zone-img--sm">
               <div class="layer-stack">
                 <div class="layer-item"><span class="layer-num">1</span><div class="layer-info"><h4>Entrada</h4><p>Espectrograma Mel como matriz 2D</p></div></div>
                 <div class="layer-item"><span class="layer-num">2</span><div class="layer-info"><h4>Convolución</h4><p>Extrae patrones locales del espectrograma</p></div></div>
@@ -372,10 +367,11 @@
             <div class="zone-5 reveal-zone">
               <div class="zone-5-header"><span class="zone-num-badge">5</span><span class="zone-label">Voces y audios</span></div>
               <div class="zone-5-body">
-                <video class="avatar-video" controls preload="metadata" 
+                <video class="avatar-video" controls preload="metadata"
                   poster="assets/media/fusion-Cover.jpg">
                   <source src="assets/media/cnn.mp4" type="video/mp4">
-                </video></div>
+                </video>
+              </div>
             </div>
             <div class="zone-6 reveal-zone"><div class="zone-6-header"><span class="zone-num-badge">6</span><span class="zone-label">Descripción de imagen</span></div><div class="zone-6-body">Arquitectura en capas de una CNN para clasificación emocional, desde la entrada del espectrograma hasta la predicción final.</div></div>
           </div>
@@ -426,7 +422,8 @@
           <div class="zone-1 reveal-zone">
             <div class="zone-1-header"><span class="zone-num-badge">1</span><span class="zone-label">Imagen de interfaz — Módulo 04</span></div>
             <div class="zone-1-body">
-              <div class="img-placeholder" style="min-height:160px;margin-bottom:14px"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="14" rx="2"/></svg><span>Diagrama de estrategias de fusión (temprana / tardía / híbrida)</span></div>
+              <!-- IMAGEN MÓDULO 04 - FUSIÓN Y ENSEMBLES -->
+              <img src="assets/images/modulo04-fusion.jpg" alt="Estrategias de fusión: temprana, tardía e híbrida" class="zone-img zone-img--sm">
               <div class="card-grid">
                 <div class="card-item"><h4>Fusión Temprana (feature-level)</h4><p>Stack optimizado de múltiples características: 90.10% en RAVDESS, superando línea base humana de ~65.8% (Fadhil &amp; Zahra, 2024)</p></div>
                 <div class="card-item"><h4>Fusión Tardía (decision-level)</h4><p>Ensemble CNN + CNN-BiLSTM por promedio de probabilidades: 97.57% RAVDESS, 100% TESS (Chowdhury et al., 2025)</p></div>
@@ -440,10 +437,11 @@
             <div class="zone-5 reveal-zone">
               <div class="zone-5-header"><span class="zone-num-badge">5</span><span class="zone-label">Voces y audios</span></div>
               <div class="zone-5-body">
-                <video class="avatar-video" controls preload="metadata" 
+                <video class="avatar-video" controls preload="metadata"
                   poster="assets/media/fusion-Cover.jpg">
                   <source src="assets/media/fusion.mp4" type="video/mp4">
-                </video></div>
+                </video>
+              </div>
             </div>
             <div class="zone-6 reveal-zone"><div class="zone-6-header"><span class="zone-num-badge">6</span><span class="zone-label">Descripción de imagen</span></div><div class="zone-6-body">Comparativa de estrategias de fusión y sus accuracies reportados en los estudios revisados de la matriz de literatura.</div></div>
           </div>
@@ -493,7 +491,8 @@
           <div class="zone-1 reveal-zone">
             <div class="zone-1-header"><span class="zone-num-badge">1</span><span class="zone-label">Imagen de interfaz — Módulo 05</span></div>
             <div class="zone-1-body">
-              <div class="img-placeholder" style="min-height:140px;margin-bottom:14px"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="14" rx="2"/></svg><span>Diagrama de aplicaciones SER en HCI</span></div>
+              <!-- IMAGEN MÓDULO 05 - APLICACIONES HCI -->
+              <img src="assets/images/modulo05-hci.jpg" alt="Aplicaciones SER en HCI" class="zone-img zone-img--xs">
               <div class="card-grid">
                 <div class="card-item"><span class="app-icon">🎓</span><h4>E-learning adaptativo</h4><p>Detecta frustración y ajusta ritmo o dificultad (Alnuaim et al., 2022)</p></div>
                 <div class="card-item"><span class="app-icon">📞</span><h4>Call centers y servicio</h4><p>Alerta al agente cuando detecta enojo del cliente; aplicaciones en tiempo real (Badawood &amp; Aldosari, 2024)</p></div>
@@ -509,10 +508,12 @@
             <div class="zone-5 reveal-zone">
               <div class="zone-5-header"><span class="zone-num-badge">5</span><span class="zone-label">Voces y audios</span></div>
               <div class="zone-5-body">
-                <video class="avatar-video" controls preload="metadata" 
+                <video class="avatar-video" controls preload="metadata"
                   poster="assets/media/fusion-Cover.jpg">
                   <source src="assets/media/app.mp4" type="video/mp4">
-                </video></div>
+                </video>
+              </div>
+            </div>
             <div class="zone-6 reveal-zone"><div class="zone-6-header"><span class="zone-num-badge">6</span><span class="zone-label">Descripción de imagen</span></div><div class="zone-6-body">Seis dominios de aplicación donde SER transforma la interacción humano-computador con interfaces emocionalmente adaptativas, incluyendo contextos multilingües.</div></div>
           </div>
         </div>
@@ -551,7 +552,8 @@
           <div class="zone-1 reveal-zone">
             <div class="zone-1-header"><span class="zone-num-badge">1</span><span class="zone-label">Imagen de interfaz — Módulo 06</span></div>
             <div class="zone-1-body">
-              <div class="img-placeholder" style="min-height:120px;margin-bottom:14px"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="14" rx="2"/></svg><span>Tabla comparativa de datasets SER</span></div>
+              <!-- IMAGEN MÓDULO 06 - ESTADO DEL ARTE -->
+              <img src="assets/images/estaarte.png" alt="Comparativa de datasets SER" class="zone-img zone-img--xs">
               <div class="dataset-table">
                 <div class="dataset-row dataset-header"><span>Dataset</span><span>Idioma</span><span>Tipo</span><span>Emociones</span></div>
                 <div class="dataset-row"><span><strong>RAVDESS</strong></span><span>Inglés</span><span>Actuado</span><span>8 emociones (24 actores)</span></div>
@@ -570,10 +572,12 @@
             <div class="zone-5 reveal-zone">
               <div class="zone-5-header"><span class="zone-num-badge">5</span><span class="zone-label">Voces y audios</span></div>
               <div class="zone-5-body">
-                <video class="avatar-video" controls preload="metadata" 
+                <video class="avatar-video" controls preload="metadata"
                   poster="assets/media/fusion-Cover.jpg">
                   <source src="assets/media/arte.mp4" type="video/mp4">
-                </video></div>
+                </video>
+              </div>
+            </div>
             <div class="zone-6 reveal-zone"><div class="zone-6-header"><span class="zone-num-badge">6</span><span class="zone-label">Descripción de imagen</span></div><div class="zone-6-body">Datasets de referencia más utilizados en la investigación reciente en SER, con idioma, tipo de elicitación y número de emociones.</div></div>
           </div>
         </div>
@@ -675,10 +679,12 @@
         <h2 class="text-screen-title">Referencias</h2>
         <p style="font-size:12px;color:var(--muted);margin-bottom:18px">Formato APA 7 · Matriz de revisión sistemática (30 artículos) + fuentes fundacionales</p>
 
-        <h3 style="font-size:14px;color:var(--red);margin:14px 0 10px;letter-spacing:0.5px;text-transform:uppercase">Matriz de revisión de literatura (PRISMA, 20 de 30 citados)</h3>
+        <h3 style="font-size:14px;color:var(--red);margin:14px 0 10px;letter-spacing:0.5px;text-transform:uppercase">Matriz de revisión de literatura (PRISMA, 30 artículos)</h3>
         <div class="ref-list">
           <div class="ref-item">Akinpelu, S., &amp; Viriri, S. (2024). Deep learning framework for speech emotion classification: A survey of the state-of-the-art. <em>IEEE Access, 12</em>, 152152–152182. <a href="https://doi.org/10.1109/ACCESS.2024.3474553" target="_blank">https://doi.org/10.1109/ACCESS.2024.3474553</a></div>
+          <div class="ref-item">Akinpelu, S., Viriri, S., &amp; Adegun, A. (2023). Lightweight deep learning framework for speech emotion recognition. <em>IEEE Access, 11</em>, 76622–76634. <a href="https://doi.org/10.1109/ACCESS.2023.3297269" target="_blank">https://doi.org/10.1109/ACCESS.2023.3297269</a></div>
           <div class="ref-item">Alnuaim, A. A., Zakariah, M., Alhadlaq, A., Shashidhar, C., Hatamleh, W. A., Tarazi, H., Shukla, P. K., &amp; Ratna, R. (2022). Human-computer interaction with detection of speaker emotions using convolution neural networks. <em>Computational Intelligence and Neuroscience, 2022</em>, 1–16. <a href="https://doi.org/10.1155/2022/7463091" target="_blank">https://doi.org/10.1155/2022/7463091</a></div>
+          <div class="ref-item">Andayani, F., Theng, L. B., Tsun, M. T., &amp; Chua, C. (2022). Hybrid LSTM-Transformer model for emotion recognition from speech audio files. <em>IEEE Access, 10</em>, 36018–36027. <a href="https://doi.org/10.1109/ACCESS.2022.3163856" target="_blank">https://doi.org/10.1109/ACCESS.2022.3163856</a></div>
           <div class="ref-item">Badawood, D. Y., &amp; Aldosari, F. M. (2024). Enhanced deep learning techniques for real-time speech emotion recognition in multilingual contexts. <em>Engineering, Technology &amp; Applied Science Research, 14</em>(6), 18662–18669. <a href="https://doi.org/10.48084/etasr.9229" target="_blank">https://doi.org/10.48084/etasr.9229</a></div>
           <div class="ref-item">Barsainyan, N., &amp; Singh, D. K. (2024). Performance analysis of CBAM-based capsule net for neural network for speech emotion recognition. <em>SSRG International Journal of Electrical and Electronics Engineering, 11</em>(12), 243–254. <a href="https://doi.org/10.14445/23488379/IJEEE-V11I12P122" target="_blank">https://doi.org/10.14445/23488379/IJEEE-V11I12P122</a></div>
           <div class="ref-item">Begazo, R., Aguilera, A., Dongo, I., &amp; Cardinale, Y. (2024). A combined CNN architecture for speech emotion recognition. <em>Sensors, 24</em>(17), 5797. <a href="https://doi.org/10.3390/s24175797" target="_blank">https://doi.org/10.3390/s24175797</a></div>
@@ -686,7 +692,10 @@
           <div class="ref-item">Boitel, E., Mohasseb, A., &amp; Haig, E. (2025). MIST: Multimodal emotion recognition using DeBERTa for text, Semi-CNN for speech, ResNet-50 for facial, and 3D-CNN for motion analysis. <em>Expert Systems with Applications, 270</em>, 126236. <a href="https://doi.org/10.1016/j.eswa.2024.126236" target="_blank">https://doi.org/10.1016/j.eswa.2024.126236</a></div>
           <div class="ref-item">Chowdhury, J. H., Ramanna, S., &amp; Kotecha, K. (2025). Speech emotion recognition with light weight deep neural ensemble model using hand crafted features. <em>Scientific Reports, 15</em>, 11824. <a href="https://doi.org/10.1038/s41598-025-95734-z" target="_blank">https://doi.org/10.1038/s41598-025-95734-z</a></div>
           <div class="ref-item">Dal Rí, F. A., Cifariello Ciardi, F., &amp; Conci, N. (2023). Speech emotion recognition and deep learning: An extensive validation using convolutional neural networks. <em>IEEE Access, 11</em>, 116474–116489. <a href="https://doi.org/10.1109/ACCESS.2023.3326071" target="_blank">https://doi.org/10.1109/ACCESS.2023.3326071</a></div>
+          <div class="ref-item">Deepika, C., &amp; Kuchibhotla, S. (2025). Enhanced speech emotion recognition using audio signal processing with CNN assistance. <em>Data and Metadata, 4</em>, 715. <a href="https://doi.org/10.56294/dm2025715" target="_blank">https://doi.org/10.56294/dm2025715</a></div>
           <div class="ref-item">Fadhil, M. F., &amp; Zahra, A. (2024). Speech emotion recognition with optimized multi-feature stack using deep convolutional neural networks. <em>Bulletin of Electrical Engineering and Informatics, 13</em>(6), 4147–4156. <a href="https://doi.org/10.11591/eei.v13i6.6044" target="_blank">https://doi.org/10.11591/eei.v13i6.6044</a></div>
+          <div class="ref-item">Gan, C., Zhou, D., Zhu, Q., Wang, X., Jain, D. K., &amp; Štruc, V. (2026). Improving emotion recognition from ambiguous speech via spatio-temporal spectrum analysis and real-time soft-label correction. <em>IEEE Transactions on Affective Computing, 17</em>(1), 1058–1073. <a href="https://doi.org/10.1109/TAFFC.2025.3645933" target="_blank">https://doi.org/10.1109/TAFFC.2025.3645933</a></div>
+          <div class="ref-item">Han, T., Zhang, Z., Ren, M., Dong, C., Jiang, X., &amp; Zhuang, Q. (2023). Speech emotion recognition based on deep residual shrinkage network. <em>Electronics, 12</em>(11), 2512. <a href="https://doi.org/10.3390/electronics12112512" target="_blank">https://doi.org/10.3390/electronics12112512</a></div>
           <div class="ref-item">Hu, Q., Peng, Y., &amp; Zheng, Z. (2025). A deep learning framework for gender sensitive speech emotion recognition based on MFCC feature selection and SHAP analysis. <em>Scientific Reports, 15</em>. <a href="https://doi.org/10.1038/s41598-025-14016-w" target="_blank">https://doi.org/10.1038/s41598-025-14016-w</a></div>
           <div class="ref-item">Jo, A.-H., &amp; Kwak, K.-C. (2023). Speech emotion recognition based on two-stream deep learning model using Korean audio information. <em>Applied Sciences, 13</em>(4), 2167. <a href="https://doi.org/10.3390/app13042167" target="_blank">https://doi.org/10.3390/app13042167</a></div>
           <div class="ref-item">Kurniadi, D., Fernando, E., Al Zayyan, S., &amp; Mulyani, A. (2025). Combined acoustic features with CNN-BiLSTM-Transformer for female emotion recognition. <em>Ingénierie des Systèmes d'Information, 30</em>(10), 2727–2737. <a href="https://doi.org/10.18280/isi.301018" target="_blank">https://doi.org/10.18280/isi.301018</a></div>
@@ -701,6 +710,7 @@
           <div class="ref-item">Ullah, R., Asif, M., Shah, W. A., Anjam, F., Ullah, I., Khurshaid, T., Wuttisittikulkij, L., Shah, S., Ali, S. M., &amp; Alibakhshikenari, M. (2023). Speech emotion recognition using convolution neural networks and multi-head convolutional transformer. <em>Sensors, 23</em>(13), 6212. <a href="https://doi.org/10.3390/s23136212" target="_blank">https://doi.org/10.3390/s23136212</a></div>
           <div class="ref-item">Wang, S., Feng, L., &amp; Zhang, L. (2025). T_SRNET: A multimodal model based on convolutional neural network for emotional speech enhancement. <em>Alexandria Engineering Journal, 124</em>, 573–581. <a href="https://doi.org/10.1016/j.aej.2025.03.071" target="_blank">https://doi.org/10.1016/j.aej.2025.03.071</a></div>
           <div class="ref-item">Wei, Z., Ge, C., Zhu, L., &amp; Ye, J. (2025). Speech emotion recognition via parallel dual-branch fusion model. <em>International Journal of Advanced Computer Science and Applications</em>. <a href="https://doi.org/10.14569/IJACSA.2025.0161115" target="_blank">https://doi.org/10.14569/IJACSA.2025.0161115</a></div>
+          <div class="ref-item">Zeng, C., Li, J., &amp; Habibi, A. (2025). Speech emotion recognition based on a stacked autoencoders optimized by PSO based grass fibrous root optimization. <em>Scientific Reports, 15</em>, 26158. <a href="https://doi.org/10.1038/s41598-025-08703-x" target="_blank">https://doi.org/10.1038/s41598-025-08703-x</a></div>
         </div>
 
         <h3 style="font-size:14px;color:var(--red);margin:22px 0 10px;letter-spacing:0.5px;text-transform:uppercase">Fuentes fundacionales y de datasets (externas a la matriz)</h3>
@@ -775,9 +785,9 @@
     </div>
   </div>
 
-  <script src="js/navigation.js?v=4a7e9f12"></script>
-  <script src="js/interactions.js?v=4a7e9f12"></script>
-  <script src="js/quiz.js?v=4a7e9f12"></script>
-  <script src="js/app.js?v=4a7e9f12"></script>
+  <script src="js/navigation.js?v=5b9f2c73"></script>
+  <script src="js/interactions.js?v=5b9f2c73"></script>
+  <script src="js/quiz.js?v=5b9f2c73"></script>
+  <script src="js/app.js?v=5b9f2c73"></script>
 </body>
 </html>
