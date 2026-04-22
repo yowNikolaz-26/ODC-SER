@@ -784,58 +784,69 @@ em { color: var(--red); font-style: normal; }
   border-radius: 6px;
   display: block;
 }
+/* ---- LOGO UDEC (portada) ---- */
 .portada-logo-img {
   width: 100%;
-  max-width: 90px;
+  max-width: 140px;      /* ANTES: 90px — ahora se ve más grande */
+  max-height: 110px;
   height: auto;
   display: block;
   margin: 0 auto;
   object-fit: contain;
 }
  
-.portada-logo-img {
-  width: 100%;
-  max-width: 90px;
-  height: auto;
-  display: block;
-  margin: 0 auto;
-  object-fit: contain;
+/* La caja contenedora del logo también un poco más amplia */
+.portada-logo-box {
+  min-height: 120px;
+  padding: 8px !important;
 }
  
 /* ---- IMAGEN PRINCIPAL DE PORTADA ---- */
 .portada-main-img {
   width: 100%;
   height: 100%;
-  max-height: 340px;
-  object-fit: cover;
+  max-height: 360px;
+  object-fit: contain;   /* ANTES: cover — evita recortar */
   object-position: center;
   border-radius: 8px;
   display: block;
+  background: #fafaf7;
 }
  
 /* ---- IMÁGENES DE ZONA 1 EN CADA MÓDULO ---- */
+/* object-fit: contain garantiza que la imagen se vea COMPLETA, */
+/* adaptándose al espacio sin recortarse. */
 .zone-img {
   width: 100%;
   height: auto;
-  min-height: 200px;
-  max-height: 320px;
-  object-fit: cover;
+  max-width: 100%;
+  max-height: 420px;     /* más alto para que las infografías amplias se vean bien */
+  object-fit: contain;   /* ANTES: cover — ahora no recorta */
   object-position: center;
   border-radius: 8px;
   display: block;
-  background: #f5f2ed;
+  background: #fafaf7;   /* fondo claro si queda espacio alrededor */
   border: 1px solid rgba(0,0,0,0.06);
+  padding: 4px;
+  box-sizing: border-box;
 }
  
-/* Versiones más pequeñas para módulos con mucho contenido adicional debajo */
+/* Variantes para módulos con mucho contenido adicional debajo */
 .zone-img--sm {
-  min-height: 140px;
-  max-height: 200px;
+  max-height: 280px;
   margin-bottom: 14px;
 }
  
 .zone-img--xs {
-  min-height: 110px;
-  max-height: 160px;
+  max-height: 220px;
   margin-bottom: 14px;
+}
+ 
+/* En pantallas pequeñas, reducir un poco las alturas */
+@media (max-width: 768px) {
+  .zone-img        { max-height: 300px; }
+  .zone-img--sm    { max-height: 220px; }
+  .zone-img--xs    { max-height: 180px; }
+  .portada-logo-img { max-width: 110px; max-height: 90px; }
+  .portada-main-img { max-height: 260px; }
 }
