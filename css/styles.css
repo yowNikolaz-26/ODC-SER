@@ -146,10 +146,19 @@ body {
   padding: 28px 48px 20px;
   border-bottom: 1px solid var(--border-l);
 }
+
+/* ===== LOGO UDEC (PORTADA) — Caja limpia, sin borde, logo grande ===== */
 .portada-logo-box {
-  width: 180px;
-  height: 70px;
-  border: 2px dashed var(--border);
+  /* Tamaño adaptativo: se ajusta al logo */
+  width: auto;
+  min-width: 200px;
+  max-width: 260px;
+  height: auto;
+  min-height: 130px;
+  padding: 10px;
+  /* Sin borde punteado ni fondo */
+  border: none;
+  background: transparent;
   border-radius: var(--r);
   display: flex;
   align-items: center;
@@ -157,13 +166,27 @@ body {
   color: var(--muted);
   font-size: 11px;
   text-align: center;
-  padding: 8px;
-  transition: border-color var(--transition);
+  transition: none;
 }
-.portada-logo-box:hover { border-color: var(--red); }
+.portada-logo-box:hover {
+  /* Sin efecto hover, es solo el logo institucional */
+  border: none;
+  background: transparent;
+}
+.portada-logo-img {
+  width: 100%;
+  max-width: 200px;
+  max-height: 120px;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  object-position: center;
+}
+
 .portada-udec { text-align: right; }
 .portada-udec p { font-size: 12px; color: var(--muted); line-height: 1.4; }
 .portada-udec strong { color: var(--dark); font-size: 13px; }
+
 .portada-body {
   position: relative;
   z-index: 1;
@@ -234,26 +257,44 @@ body {
   padding: 48px;
   position: relative;
 }
+
+/* ===== IMAGEN DE PORTADA (HERO) — Caja limpia, sin borde, sin hover ===== */
 .portada-image-box {
   width: 100%;
-  max-width: 380px;
+  max-width: 460px;
   aspect-ratio: 16/10;
-  border: 2px dashed var(--border);
-  border-radius: 10px;
-  background: var(--white);
+  /* Sin borde punteado, sin fondo raro */
+  border: none;
+  background: transparent;
+  border-radius: 12px;
+  overflow: hidden;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  color: var(--muted);
-  font-size: 13px;
   animation: fadeUp 0.7s 0.5s both;
-  transition: border-color var(--transition), box-shadow var(--transition);
+  transition: box-shadow var(--transition);
 }
-.portada-image-box:hover { border-color: var(--red); box-shadow: 0 0 0 4px var(--red-pale); }
-.portada-image-box svg { opacity: 0.4; }
-.portada-tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; animation: fadeUp 0.6s 0.65s both; }
+.portada-image-box:hover {
+  /* Sin hover que pinta borde rojo */
+  border: none;
+  box-shadow: var(--shadow-md);
+}
+.portada-main-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 12px;
+  display: block;
+}
+
+.portada-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  animation: fadeUp 0.6s 0.65s both;
+}
 .portada-tag {
   background: var(--white);
   border: 1px solid var(--border);
@@ -348,7 +389,13 @@ body {
   display: flex; align-items: center; gap: 8px;
 }
 .zone-1-header { padding: 10px 16px; border-bottom: 1px solid var(--border-l); background: var(--cream); }
-.zone-1-body { flex: 1; padding: 20px; display: flex; flex-direction: column; }
+.zone-1-body {
+  flex: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
 
 .zone-label {
   font-size: 10px; font-weight: 700; text-transform: uppercase;
@@ -419,7 +466,7 @@ body {
 }
 .avatar-placeholder svg { display: block; margin: 0 auto 8px; opacity: 0.4; }
 
-/* ===== IMAGE PLACEHOLDER ===== */
+/* ===== IMAGE PLACEHOLDER (solo se ve si alguna imagen aún no está) ===== */
 .img-placeholder {
   background: var(--cream);
   border: 2px dashed var(--border);
@@ -437,6 +484,31 @@ body {
 }
 .img-placeholder:hover { border-color: var(--red); }
 .img-placeholder svg { opacity: 0.35; }
+
+/* ===== IMÁGENES DE ZONA 1 EN MÓDULOS ===== */
+/* object-fit: cover para que la imagen llene todo el ancho de su caja */
+/* (puede recortar un poco arriba/abajo, pero evita espacios en blanco laterales) */
+.zone-img {
+  width: 100%;
+  height: 360px;           /* Altura fija para dar proporción */
+  max-width: 100%;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 8px;
+  display: block;
+  background: #fafaf7;
+  border: 1px solid rgba(0,0,0,0.06);
+  box-sizing: border-box;
+  margin: 0 auto;
+}
+.zone-img--sm {
+  height: 280px;
+  margin-bottom: 14px;
+}
+.zone-img--xs {
+  height: 240px;
+  margin-bottom: 14px;
+}
 
 /* ===== STAT CARDS ===== */
 .stat-row { display: flex; gap: 10px; flex-wrap: wrap; }
@@ -775,78 +847,124 @@ body {
 }
 .modal-close:hover { background: var(--border); }
 
-/* ===== UTILITY ===== */
-.activity-instruction { font-size: 12px; color: var(--muted); margin-bottom: 12px; font-style: italic; }
-em { color: var(--red); font-style: normal; }
-
+/* ===== AVATAR VIDEO ===== */
 .avatar-video {
   width: 100%;
   border-radius: 6px;
   display: block;
 }
-/* ---- LOGO UDEC (portada) ---- */
-.portada-logo-img {
-  width: 100%;
-  max-width: 140px;      /* ANTES: 90px — ahora se ve más grande */
-  max-height: 110px;
-  height: auto;
-  display: block;
-  margin: 0 auto;
-  object-fit: contain;
+
+/* ===== UTILITY ===== */
+.activity-instruction { font-size: 12px; color: var(--muted); margin-bottom: 12px; font-style: italic; }
+em { color: var(--red); font-style: normal; }
+
+/* ===================================================
+   RESPONSIVE — Adaptación para tablets y móviles
+   =================================================== */
+
+/* Tablet (≤ 1024px) */
+@media (max-width: 1024px) {
+  .portada-logo-img { max-width: 170px; max-height: 100px; }
+  .portada-logo-box { min-width: 180px; max-width: 220px; min-height: 110px; }
+  .portada-image-box { max-width: 380px; }
+
+  .zone-img        { height: 300px; }
+  .zone-img--sm    { height: 240px; }
+  .zone-img--xs    { height: 200px; }
 }
- 
-/* La caja contenedora del logo también un poco más amplia */
-.portada-logo-box {
-  min-height: 120px;
-  padding: 8px !important;
-}
- 
-/* ---- IMAGEN PRINCIPAL DE PORTADA ---- */
-.portada-main-img {
-  width: 100%;
-  height: 100%;
-  max-height: 360px;
-  object-fit: contain;   /* ANTES: cover — evita recortar */
-  object-position: center;
-  border-radius: 8px;
-  display: block;
-  background: #fafaf7;
-}
- 
-/* ---- IMÁGENES DE ZONA 1 EN CADA MÓDULO ---- */
-/* object-fit: contain garantiza que la imagen se vea COMPLETA, */
-/* adaptándose al espacio sin recortarse. */
-.zone-img {
-  width: 100%;
-  height: auto;
-  max-width: 100%;
-  max-height: 420px;     /* más alto para que las infografías amplias se vean bien */
-  object-fit: contain;   /* ANTES: cover — ahora no recorta */
-  object-position: center;
-  border-radius: 8px;
-  display: block;
-  background: #fafaf7;   /* fondo claro si queda espacio alrededor */
-  border: 1px solid rgba(0,0,0,0.06);
-  padding: 4px;
-  box-sizing: border-box;
-}
- 
-/* Variantes para módulos con mucho contenido adicional debajo */
-.zone-img--sm {
-  max-height: 280px;
-  margin-bottom: 14px;
-}
- 
-.zone-img--xs {
-  max-height: 220px;
-  margin-bottom: 14px;
-}
- 
-/* En pantallas pequeñas, reducir un poco las alturas */
+
+/* Móvil (≤ 768px) */
 @media (max-width: 768px) {
-  .zone-img        { max-height: 300px; }
-  .zone-img--sm    { max-height: 220px; }
-  .zone-img--xs    { max-height: 180px; }
-  .portada-logo-img { max-width: 110px; max-height: 90px; }
-  .portada-main-img { max-height: 260px; }
+  .portada-header {
+    padding: 20px 24px 16px;
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+  }
+  .portada-udec { text-align: center; }
+  .portada-logo-box {
+    min-width: 150px;
+    max-width: 200px;
+    min-height: 95px;
+    padding: 6px;
+  }
+  .portada-logo-img { max-width: 150px; max-height: 85px; }
+
+  .portada-body {
+    grid-template-columns: 1fr;  /* Una columna en móvil */
+  }
+  .portada-left {
+    padding: 32px 24px;
+    border-right: none;
+    border-bottom: 1px solid var(--border-l);
+  }
+  .portada-right { padding: 32px 24px; }
+  .portada-image-box { max-width: 100%; }
+  .portada-main-img { border-radius: 10px; }
+  .portada-footer {
+    padding: 14px 24px;
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+  }
+
+  /* Layout del ODC en una sola columna en móvil */
+  .odc-top, .odc-bottom {
+    grid-template-columns: 1fr;
+  }
+  .odc-right-col { order: 2; }
+  .zone-1 { min-height: auto; }
+
+  /* Imágenes de módulos en móvil */
+  .zone-img {
+    height: 240px;
+  }
+  .zone-img--sm { height: 200px; }
+  .zone-img--xs { height: 170px; }
+
+  /* Grids internos de 2 a 1 columna */
+  .feat-grid,
+  .card-grid,
+  .next-steps-grid {
+    grid-template-columns: 1fr;
+  }
+  .menu-grid { grid-template-columns: 1fr; }
+  .credits-layout { grid-template-columns: 1fr; }
+
+  /* Tabla de datasets más compacta */
+  .dataset-row {
+    grid-template-columns: 1fr 1fr;
+    font-size: 11px;
+  }
+
+  /* Nav flotante un poco más compacto */
+  .global-nav {
+    bottom: 16px;
+    padding: 4px 6px;
+  }
+  .nav-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+}
+
+/* Móvil pequeño (≤ 480px) */
+@media (max-width: 480px) {
+  .portada-logo-img { max-width: 130px; max-height: 75px; }
+  .portada-logo-box { min-width: 130px; max-width: 170px; min-height: 85px; }
+
+  .portada-left { padding: 24px 18px; }
+  .portada-right { padding: 24px 18px; }
+  .portada-title { font-size: 26px; }
+
+  .portada-main-img { border-radius: 8px; }
+
+  .zone-img        { height: 200px; }
+  .zone-img--sm    { height: 170px; }
+  .zone-img--xs    { height: 150px; }
+
+  .odc-page { padding: 12px 14px; }
+  .text-screen, .menu-screen, .eval-screen { padding: 0 16px; }
+
+  .match-pairs { grid-template-columns: 1fr; }
 }
