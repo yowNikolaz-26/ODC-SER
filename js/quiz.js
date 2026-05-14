@@ -4,6 +4,128 @@
 
 const ODCQuiz = (() => {
 
+  /* ---- SONIDOS DE FEEDBACK (Web Audio API) ---- */
+  let audioCtx = null;
+  function getAudioCtx() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    return audioCtx;
+  }
+
+  function playCorrectSound() {
+    try {
+      const ctx = getAudioCtx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(523, ctx.currentTime);       // C5
+      osc.frequency.setValueAtTime(659, ctx.currentTime + 0.1); // E5
+      osc.frequency.setValueAtTime(784, ctx.currentTime + 0.2); // G5
+      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.4);
+    } catch(e) {}
+  }
+
+  function playIncorrectSound() {
+    try {
+      const ctx = getAudioCtx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(220, ctx.currentTime);
+      osc.frequency.setValueAtTime(180, ctx.currentTime + 0.12);
+      gain.gain.setValueAtTime(0.08, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.25);
+    } catch(e) {}
+  }
+
+  function playSuccessSound() {
+    try {
+      const ctx = getAudioCtx();
+      const notes = [523, 659, 784, 1047]; // C5 E5 G5 C6
+      notes.forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.12);
+        gain.gain.setValueAtTime(0.15, ctx.currentTime + i * 0.12);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.12 + 0.35);
+        osc.start(ctx.currentTime + i * 0.12);
+        osc.stop(ctx.currentTime + i * 0.12 + 0.35);
+      });
+    } catch(e) {}
+  }
+
+  /* ---- CONFETTI ---- */
+  function launchConfetti() {
+    const canvas = document.createElement('canvas');
+    canvas.id = 'confettiCanvas';
+    canvas.style.cssText = 'position:fixed;inset:0;z-index:9999;pointer-events:none;width:100%;height:100%;';
+    document.body.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const colors = ['#C0202B','#e8353f','#f9d423','#16a34a','#3b82f6','#a855f7','#ec4899','#f97316'];
+    const pieces = [];
+    const TOTAL_PIECES = 150;
+
+    for (let i = 0; i < TOTAL_PIECES; i++) {
+      pieces.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height * -1 - 20,
+        w: Math.random() * 8 + 4,
+        h: Math.random() * 5 + 3,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        vy: Math.random() * 3 + 2,
+        vx: (Math.random() - 0.5) * 2,
+        rot: Math.random() * 360,
+        rotSpeed: (Math.random() - 0.5) * 10,
+        opacity: 1,
+      });
+    }
+
+    let frame = 0;
+    const maxFrames = 200;
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      frame++;
+
+      pieces.forEach(p => {
+        p.y += p.vy;
+        p.x += p.vx;
+        p.rot += p.rotSpeed;
+        p.vy += 0.04; // gravity
+        if (frame > maxFrames - 60) p.opacity = Math.max(0, p.opacity - 0.018);
+
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate((p.rot * Math.PI) / 180);
+        ctx.globalAlpha = p.opacity;
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        ctx.restore();
+      });
+
+      if (frame < maxFrames) {
+        requestAnimationFrame(animate);
+      } else {
+        canvas.remove();
+      }
+    }
+    requestAnimationFrame(animate);
+  }
+
   /* ---- V / F ---- */
   function initVF() {
     document.querySelectorAll('.vf-item').forEach(item => {
@@ -23,12 +145,14 @@ const ODCQuiz = (() => {
             fb.textContent = '✓ ¡Correcto!';
             fb.style.color = '#065f46';
             pulseElement(btn);
+            playCorrectSound();
           } else {
             btn.classList.add('incorrect');
             fb.textContent = '✗ Incorrecto. La respuesta es ' + (correct === 'true' ? 'Verdadero' : 'Falso') + '.';
             fb.style.color = '#991b1b';
             // Show correct
             btns.forEach(b => { if (b.dataset.answer === correct) b.classList.add('correct'); });
+            playIncorrectSound();
           }
         });
       });
@@ -53,11 +177,13 @@ const ODCQuiz = (() => {
             fb.textContent = '✓ ¡Correcto!';
             fb.style.color = '#065f46';
             pulseElement(btn);
+            playCorrectSound();
           } else {
             btn.classList.add('incorrect');
             fb.textContent = '✗ Incorrecto.';
             fb.style.color = '#991b1b';
             btns.forEach(b => { if (b.dataset.option === correct) b.classList.add('correct'); });
+            playIncorrectSound();
           }
         });
       });
@@ -81,11 +207,13 @@ const ODCQuiz = (() => {
           fb.textContent = '✓ Correcto. El módulo SER de audio es el más directo, no invasivo y disponible en cualquier dispositivo.';
           fb.style.color = '#065f46';
           pulseElement(btn);
+          playCorrectSound();
         } else {
           btn.classList.add('incorrect');
           fb.textContent = '✗ El módulo SER de audio/micrófono es la opción más accesible y directa para detectar emociones.';
           fb.style.color = '#991b1b';
           container.querySelector('[data-option="b"]')?.classList.add('correct');
+          playIncorrectSound();
         }
       });
     });
@@ -121,6 +249,7 @@ const ODCQuiz = (() => {
             def.classList.add('matched');
             matchedCount++;
             selectedTerm = null;
+            playCorrectSound();
 
             if (matchedCount === totalPairs && fb) {
               fb.textContent = '✓ ¡Excelente! Todas las parejas son correctas.';
@@ -130,6 +259,7 @@ const ODCQuiz = (() => {
             // Wrong match animation
             selectedTerm.classList.add('wrong');
             def.classList.add('wrong');
+            playIncorrectSound();
             setTimeout(() => {
               selectedTerm?.classList.remove('wrong', 'selected');
               def.classList.remove('wrong');
@@ -184,10 +314,12 @@ const ODCQuiz = (() => {
             setTimeout(() => item.classList.add('correct'), i * 60);
           });
           if (feedback) { feedback.textContent = '✓ ¡Orden correcto!'; feedback.style.color = '#065f46'; }
+          playCorrectSound();
         } else {
           if (feedback) { feedback.textContent = '✗ El orden no es correcto. Intenta de nuevo.'; feedback.style.color = '#991b1b'; }
           list.style.animation = 'shake 0.4s ease';
           setTimeout(() => list.style.animation = '', 500);
+          playIncorrectSound();
         }
       });
     });
@@ -217,11 +349,13 @@ const ODCQuiz = (() => {
             fb.textContent = '✓ Correcto';
             fb.style.color = '#065f46';
             pulseElement(btn);
+            playCorrectSound();
           } else {
             btn.classList.add('incorrect');
             fb.textContent = '✗ Incorrecto';
             fb.style.color = '#991b1b';
             q.querySelector('[data-option="' + correct + '"]')?.classList.add('correct');
+            playIncorrectSound();
           }
 
           evalAnswered++;
@@ -264,6 +398,8 @@ const ODCQuiz = (() => {
       if (title) title.textContent = `¡Aprobado! ${score}/8`;
       if (text)  text.textContent  = `Has alcanzado el REA con ${pct}% de acierto.`;
       if (retry) retry.style.display = 'none';
+      playSuccessSound();
+      launchConfetti();
     } else {
       if (icon)  icon.textContent  = '📚';
       if (title) title.textContent = `Necesitas repasar · ${score}/8`;

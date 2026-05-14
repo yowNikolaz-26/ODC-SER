@@ -20,8 +20,10 @@ const ODCNav = (() => {
   function updateNavButtons(n) {
     const prev = document.getElementById('btnPrev');
     const next = document.getElementById('btnNext');
+    const indicator = document.getElementById('pageIndicator');
     if (prev) prev.style.opacity = n === 0 ? '0.35' : '1';
     if (next) next.style.opacity = n === TOTAL - 1 ? '0.35' : '1';
+    if (indicator) indicator.textContent = (n + 1) + ' / ' + TOTAL;
   }
 
   function showScreen(n, direction = 'next') {

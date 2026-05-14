@@ -7,12 +7,14 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
+  <meta name="description" content="Objeto Digital de Conocimiento sobre Reconocimiento Emocional por Voz (SER) mediante Redes Neuronales Convolucionales en Interfaces Adaptativas de Interacción Humano-Computador. Universidad de Cundinamarca, 2026.">
+  <link rel="icon" type="image/png" href="assets/images/uni.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=20260507">
-  <link rel="stylesheet" href="css/responsive.css?v=20260507">
-  <link rel="stylesheet" href="css/practical.css?v=20260507">
+  <link rel="stylesheet" href="css/styles.css?v=20260513">
+  <link rel="stylesheet" href="css/responsive.css?v=20260513">
+  <link rel="stylesheet" href="css/practical.css?v=20260513">
   <style>
     /* ===== IMÁGENES EN ZONA 1 ===== */
     .zone-img { width:100%; border-radius:6px; display:block; height:auto; object-fit:fill; }
@@ -87,9 +89,10 @@
   <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
 
   <nav class="global-nav">
-    <button class="nav-btn" id="btnPrev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg> Anterior</button>
-    <button class="nav-btn nav-menu-btn" id="btnMenu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg> Menú</button>
-    <button class="nav-btn" id="btnNext">Siguiente <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+    <button class="nav-btn" id="btnPrev" aria-label="Pantalla anterior"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg> Anterior</button>
+    <button class="nav-btn nav-menu-btn" id="btnMenu" aria-label="Ir al menú principal"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg> Menú</button>
+    <span class="nav-page-indicator" id="pageIndicator" aria-live="polite">1 / 14</span>
+    <button class="nav-btn" id="btnNext" aria-label="Pantalla siguiente">Siguiente <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
   </nav>
 
   <div class="odc-wrap">
@@ -679,6 +682,14 @@
                     </span>
                     <span class="audio-btn-tag">Ira · Felicidad</span>
                   </button>
+                  <button class="demo-btn-select" data-audio="audio3">
+                    <span class="audio-btn-emoji">😨</span>
+                    <span class="audio-btn-info">
+                      <strong>Audio 3</strong>
+                      <small>Media-alta activación</small>
+                    </span>
+                    <span class="audio-btn-tag">Miedo · Sorpresa</span>
+                  </button>
                 </div>
               </div>
 
@@ -765,10 +776,31 @@
                 <span class="analysis-pill analysis-pill-low">Baja activación</span>
                 <p>En el <strong>Audio 1</strong>, <strong>Neutral</strong> y <strong>Tristeza</strong> comparten baja energía, lo que produce ambigüedad acústica.</p>
               </div>
-              <div class="analysis-note">Comportamiento típico en SER acústico sin contexto semántico (Bhanbhro et al., 2025).</div>
+              <div class="analysis-item">
+                <span class="analysis-pill analysis-pill-mid">Media-alta activación</span>
+                <p>En el <strong>Audio 3</strong>, <strong>Miedo</strong> y <strong>Sorpresa</strong> comparten picos de F0 y variabilidad rápida — el modelo confunde ambas frecuentemente.</p>
+              </div>
+              <div class="analysis-note">Comportamiento típico en SER acústico sin contexto semántico (Bhanbhro et al., 2025; Dal Rí et al., 2023).</div>
             </div>
           </div>
 
+        </div>
+
+        <!-- Matriz de confusión -->
+        <div class="practical-confusion-wrap">
+          <div class="zone-3 reveal-zone practical-confusion">
+            <div class="zone-3-header">
+              <span class="zone-num-badge">✦</span>
+              <span class="zone-label">Matriz de confusión · 1D CNN en RAVDESS (simulada)</span>
+            </div>
+            <div class="zone-3-body">
+              <div class="cm-empty" id="cmEmpty">
+                <div class="demo-bars-empty-icon">🔬</div>
+                <p>La matriz de confusión aparecerá aquí después de ejecutar el análisis. Muestra qué emociones tiende a confundir el modelo.</p>
+              </div>
+              <div class="cm-container" id="cmContainer" style="display:none;"></div>
+            </div>
+          </div>
         </div>
 
         <div class="zone-7 reveal-zone">
@@ -872,7 +904,7 @@
         </div>
         <h3 style="font-size:14px;color:var(--red);margin:22px 0 10px;letter-spacing:0.5px;text-transform:uppercase">Recursos visuales (imágenes generadas con IA)</h3>
         <div class="ref-list">
-          <div class="ref-item">Google. (2026). <em>Gemini</em> [Modelo generativo de imágenes]. Google DeepMind. <a href="https://gemini.google.com" target="_blank">https://gemini.google.com</a> — Módulos 01, 02 y 03.</div>
+          <div class="ref-item">Google. (2026). <em>Gemini</em> [Modelo generativo multimodal]. Google DeepMind. <a href="https://gemini.google.com" target="_blank">https://gemini.google.com</a> — Imágenes: Módulos 01, 02 y 03. Videos de avatar: todos los módulos.</div>
           <div class="ref-item">OpenAI. (2026). <em>ChatGPT</em> [Modelo multimodal]. OpenAI. <a href="https://chat.openai.com" target="_blank">https://chat.openai.com</a> — Pantalla 2, Módulos 04, 05 y 06.</div>
           <div class="ref-item">American Psychological Association. (2023). <em>How to cite ChatGPT</em>. APA Style Blog. <a href="https://apastyle.apa.org/blog/how-to-cite-chatgpt" target="_blank">https://apastyle.apa.org/blog/how-to-cite-chatgpt</a></div>
           <div class="ref-item">UNESCO. (2022). <em>Recomendación sobre la ética de la inteligencia artificial</em>. <a href="https://unesdoc.unesco.org/ark:/48223/pf0000381137_spa" target="_blank">https://unesdoc.unesco.org/ark:/48223/pf0000381137_spa</a></div>
@@ -893,10 +925,10 @@
               <tr><td>Área de conocimiento</td><td>Inteligencia Artificial · Interacción Humano-Computador</td></tr>
               <tr><td>Nombre del material</td><td>Reconocimiento Emocional por Voz en Interfaces Adaptativas</td></tr>
               <tr><td>Autores</td><td>Yow Nicolás Guacaneme Molano · Miguel Angel Pardo López</td></tr>
-              <tr><td>Diseño y desarrollo</td><td>Yow Nicolás Guacaneme Molano</td></tr>
+              <tr><td>Diseño y desarrollo</td><td>Yow Nicolás Guacaneme Molano · Miguel Angel Pardo López</td></tr>
               <tr><td>Tutoría</td><td>Jhondert Alberto Jaimes Rodriguez</td></tr>
               <tr><td>Imágenes</td><td>Logo: Universidad de Cundinamarca. Ilustraciones: generadas con ChatGPT (OpenAI) y Gemini (Google), 2026.</td></tr>
-              <tr><td>Sonidos y voces</td><td>Guiones locutados por avatar de IA generativa a partir de textos elaborados por los autores, 2026.</td></tr>
+              <tr><td>Sonidos y voces</td><td>Videos de avatar generados con Gemini (Google, 2026) a partir de guiones elaborados por los autores.</td></tr>
               <tr><td>Fecha de creación</td><td>2026</td></tr>
               <tr><td>Nivel educativo</td><td>Alto (Posgrado / Especialización)</td></tr>
               <tr><td>Institución</td><td>Universidad de Cundinamarca</td></tr>
@@ -930,11 +962,11 @@
     </div>
   </div>
 
-  <script src="js/navigation.js?v=20260507"></script>
-  <script src="js/interactions.js?v=20260507"></script>
-  <script src="js/quiz.js?v=20260507"></script>
-  <script src="js/simulator.js?v=20260508"></script>
-  <script src="js/app.js?v=20260507"></script>
+  <script src="js/navigation.js?v=20260513"></script>
+  <script src="js/interactions.js?v=20260513"></script>
+  <script src="js/quiz.js?v=20260513"></script>
+  <script src="js/simulator.js?v=20260513"></script>
+  <script src="js/app.js?v=20260513"></script>
   <script>
     // PRISMA toggle + contadores animados
     let prismaAnimated = false;

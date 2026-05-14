@@ -96,6 +96,19 @@ body {
 .nav-btn:active { transform: scale(0.97); }
 .nav-btn.nav-menu-btn { background: var(--red); color: #fff; }
 .nav-btn.nav-menu-btn:hover { background: var(--red-light); }
+.nav-page-indicator {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  padding: 0 6px;
+  letter-spacing: 0.03em;
+  user-select: none;
+  white-space: nowrap;
+  border-left: 1px solid var(--border-l);
+  border-right: 1px solid var(--border-l);
+  margin: 0 2px;
+  line-height: 1;
+}
 
 /* ===== SCREEN SYSTEM ===== */
 .odc-wrap { min-height: 100vh; padding: 14px 0 100px; }
