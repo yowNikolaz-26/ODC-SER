@@ -16,7 +16,7 @@
       focusNote: 'Alta activación: Ira y Felicidad comparten energía alta y F0 elevada — el modelo las confunde.'
     },
     audio3: {
-      src: 'assets/audio/audio3.mp4',
+      src: 'assets/audio/audio3.wav',
       actual: 'Miedo',
       emotion: 'Miedo', emoji: '😨', confidence: 47.3, color: '#8e44ad',
       probs: {'Miedo':47.3,'Sorpresa':29.8,'Disgusto':8.2,'Ira':5.9,'Tristeza':4.1,'Felicidad':2.4,'Neutral':1.5,'Calma':0.8},
