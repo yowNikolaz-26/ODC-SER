@@ -568,7 +568,7 @@
 .cm-swatch-diag { background: rgba(22, 163, 74, 0.55); }
 .cm-swatch-conf { background: rgba(192, 32, 43, 0.5); }
 .cm-swatch-med { background: rgba(249, 115, 22, 0.35); }
-.cm-swatch-low { background: rgba(0, 0, 0, 0.04); }
+.cm-swatch-low { background: rgba(20, 20, 20, 0.22); }
 .cm-axis-note {
   font-size: 10px;
   color: var(--muted);
