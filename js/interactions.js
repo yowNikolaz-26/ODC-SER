@@ -115,39 +115,9 @@ const ODCInteractions = (() => {
     });
   }
 
-  /* ---- CONTADORES ANIMADOS ---- */
-  function animateCounter(el, target, duration = 1200) {
-    const isFloat = target % 1 !== 0;
-    const start = performance.now();
-    const startVal = 0;
-
-    function update(now) {
-      const elapsed = now - start;
-      const progress = Math.min(elapsed / duration, 1);
-      // Ease out quart
-      const eased = 1 - Math.pow(1 - progress, 4);
-      const val = startVal + (target - startVal) * eased;
-
-      el.textContent = isFloat
-        ? val.toFixed(1) + '%'
-        : (Number.isInteger(target) && target < 20)
-          ? Math.round(val).toString()
-          : Math.round(val) + (el.dataset.suffix || '');
-
-      if (progress < 1) requestAnimationFrame(update);
-    }
-    requestAnimationFrame(update);
-  }
-
+  /* ---- CONTADORES ANIMADOS (Deshabilitados) ---- */
   function triggerCounters() {
-    const activeScreen = document.querySelector('.screen.active');
-    if (!activeScreen) return;
-
-    activeScreen.querySelectorAll('.stat-value[data-count]').forEach(el => {
-      const target = parseFloat(el.dataset.count);
-      el.textContent = '0';
-      setTimeout(() => animateCounter(el, target), 200);
-    });
+    // No-op: animations disabled
   }
 
   /* ---- POPUPS ---- */

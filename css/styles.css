@@ -563,7 +563,7 @@ body {
 .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
 .stat-value {
   display: block;
-  font-family: var(--font-head);
+  font-family: var(--font-body);
   font-size: 28px;
   color: var(--red);
   font-weight: 700;

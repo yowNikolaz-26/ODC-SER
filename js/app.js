@@ -38,17 +38,6 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ---- reveal-zone ya viene en el HTML como clase estática ---- */
   // No se agrega dinámicamente para evitar que queden en opacity:0 sin revelar
 
-  /* ---- Add data-count to stat values for counter animation ---- */
-  document.querySelectorAll('.stat-value').forEach(el => {
-    const text = el.textContent.trim();
-    const num = parseFloat(text.replace('%', '').replace(',', '.'));
-    if (!isNaN(num)) {
-      el.dataset.count = num;
-      if (text.includes('%')) el.dataset.suffix = '%';
-      el.textContent = '0' + (text.includes('%') ? '%' : '');
-    }
-  });
-
   /* ---- Smooth scroll to top on nav click ---- */
   document.getElementById('btnNext')?.addEventListener('click', () => window.scrollTo({ top: 0 }));
   document.getElementById('btnPrev')?.addEventListener('click', () => window.scrollTo({ top: 0 }));
